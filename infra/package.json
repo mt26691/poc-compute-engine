@@ -1,0 +1,16 @@
+{
+  "name": "poc-compute-engine",
+  "main": "index.ts",
+  "scripts": {
+    "deploy": "pulumi up -y -s dev",
+    "destroy": "pulumi destroy -y -s dev"
+  },
+  "devDependencies": {
+    "@types/node": "^16"
+  },
+  "dependencies": {
+    "@pulumi/docker": "^4.4.1",
+    "@pulumi/gcp": "^6.0.0",
+    "@pulumi/pulumi": "^3.0.0"
+  }
+}

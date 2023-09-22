@@ -1,0 +1,3 @@
+config:
+  gcp:project: linhvuvan-397815
+  gcp:region: us-central1
