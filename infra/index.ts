@@ -29,7 +29,7 @@ const firewall = new gcp.compute.Firewall('firewall', {
   allows: [
     {
       protocol: 'tcp',
-      ports: ['22', '80', '3000'],
+      ports: ['22', '80'],
     },
   ],
   direction: 'INGRESS',
@@ -46,17 +46,16 @@ const startupScript = `
   sudo -u linhvuvan2022 docker logs -f ${IMAGE_NAME}
 `;
 
-new gcp.compute.Instance(
-  'instance',
+const template = new gcp.compute.InstanceTemplate(
+  'template',
   {
     machineType: 'e2-micro',
-    zone: 'us-central1-a',
     metadataStartupScript: startupScript,
-    bootDisk: {
-      initializeParams: {
-        image: 'projects/cos-cloud/global/images/family/cos-stable',
+    disks: [
+      {
+        sourceImage: 'projects/cos-cloud/global/images/family/cos-stable',
       },
-    },
+    ],
     networkInterfaces: [
       {
         network: network.id,
@@ -78,5 +77,26 @@ new gcp.compute.Instance(
   },
   { dependsOn: [firewall] },
 );
+
+const group = new gcp.compute.RegionInstanceGroupManager('group-manager', {
+  region: 'us-central1',
+  versions: [
+    {
+      instanceTemplate: template.id,
+    },
+  ],
+  baseInstanceName: 'poc-compute-engine',
+});
+
+new gcp.compute.RegionAutoscaler('autoscaler', {
+  target: group.id,
+  autoscalingPolicy: {
+    minReplicas: 2,
+    maxReplicas: 5,
+    cpuUtilization: {
+      target: 0.5,
+    },
+  },
+});
 
 export const imageName = image.imageName;
