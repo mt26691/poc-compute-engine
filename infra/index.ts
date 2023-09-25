@@ -3,8 +3,10 @@ import * as gcp from '@pulumi/gcp';
 import * as docker from '@pulumi/docker';
 
 const IMAGE_NAME = 'compute-engine-app';
-const REVISION = 3;
+const REVISION = 9;
+const PORT = 3000;
 const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${IMAGE_NAME}:${REVISION}`;
+const START_TIME_SEC = 30;
 
 const image = new docker.Image(IMAGE_NAME, {
   imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,
@@ -24,12 +26,12 @@ const subnet = new gcp.compute.Subnetwork('subnet', {
   network: network.id,
 });
 
-const firewall = new gcp.compute.Firewall('firewall', {
+new gcp.compute.Firewall('firewall', {
   network: network.selfLink,
   allows: [
     {
       protocol: 'tcp',
-      ports: ['22', '80'],
+      ports: ['22', '80', '3000'],
     },
   ],
   direction: 'INGRESS',
@@ -42,43 +44,46 @@ const startupScript = `
   sudo -u linhvuvan2022 docker-credential-gcr configure-docker
   sudo groupadd docker
   sudo usermod -aG docker linhvuvan2022
-  sudo -u linhvuvan2022 docker run --name ${IMAGE_NAME} -d -p 80:3000 ${IMAGE_REPOSITORY}
+  sudo -u linhvuvan2022 docker run --name ${IMAGE_NAME} -d -p ${PORT}:3000 ${IMAGE_REPOSITORY}
   sudo -u linhvuvan2022 docker logs -f ${IMAGE_NAME}
 `;
 
-const template = new gcp.compute.InstanceTemplate(
-  'template',
-  {
-    machineType: 'e2-micro',
-    metadataStartupScript: startupScript,
-    disks: [
-      {
-        sourceImage: 'projects/cos-cloud/global/images/family/cos-stable',
-      },
-    ],
-    networkInterfaces: [
-      {
-        network: network.id,
-        subnetwork: subnet.id,
-        accessConfigs: [{}],
-      },
-    ],
-    serviceAccount: {
-      email: '819423612556-compute@developer.gserviceaccount.com',
-      scopes: [
-        'https://www.googleapis.com/auth/devstorage.read_only',
-        'https://www.googleapis.com/auth/logging.write',
-        'https://www.googleapis.com/auth/monitoring.write',
-        'https://www.googleapis.com/auth/service.management.readonly',
-        'https://www.googleapis.com/auth/servicecontrol',
-        'https://www.googleapis.com/auth/trace.append',
-      ],
+const template = new gcp.compute.InstanceTemplate('template', {
+  machineType: 'e2-micro',
+  metadataStartupScript: startupScript,
+  disks: [
+    {
+      sourceImage: 'projects/cos-cloud/global/images/family/cos-stable',
     },
+  ],
+  networkInterfaces: [
+    {
+      network: network.id,
+      subnetwork: subnet.id,
+      accessConfigs: [{}],
+    },
+  ],
+  serviceAccount: {
+    email: '819423612556-compute@developer.gserviceaccount.com',
+    scopes: [
+      'https://www.googleapis.com/auth/devstorage.read_only',
+      'https://www.googleapis.com/auth/logging.write',
+      'https://www.googleapis.com/auth/monitoring.write',
+      'https://www.googleapis.com/auth/service.management.readonly',
+      'https://www.googleapis.com/auth/servicecontrol',
+      'https://www.googleapis.com/auth/trace.append',
+    ],
   },
-  { dependsOn: [firewall] },
-);
+});
 
-const group = new gcp.compute.RegionInstanceGroupManager('group-manager', {
+const health = new gcp.compute.HealthCheck('health', {
+  httpHealthCheck: {
+    port: PORT,
+    requestPath: '/healthz',
+  },
+});
+
+const group = new gcp.compute.RegionInstanceGroupManager('group', {
   region: 'us-central1',
   versions: [
     {
@@ -86,17 +91,70 @@ const group = new gcp.compute.RegionInstanceGroupManager('group-manager', {
     },
   ],
   baseInstanceName: 'poc-compute-engine',
+  namedPorts: [
+    {
+      name: 'http',
+      port: PORT,
+    },
+  ],
+  // autoHealingPolicies: {
+  //   healthCheck: health.id,
+  //   initialDelaySec: START_TIME_SEC,
+  // },
+  updatePolicy: {
+    type: 'PROACTIVE',
+    minimalAction: 'REPLACE',
+  },
 });
 
 new gcp.compute.RegionAutoscaler('autoscaler', {
   target: group.id,
   autoscalingPolicy: {
+    cooldownPeriod: START_TIME_SEC,
     minReplicas: 2,
     maxReplicas: 5,
     cpuUtilization: {
       target: 0.5,
     },
   },
+});
+
+const backend = new gcp.compute.BackendService('backend', {
+  protocol: 'HTTP',
+  healthChecks: health.id,
+  backends: [
+    {
+      group: group.instanceGroup,
+    },
+  ],
+});
+
+const map = new gcp.compute.URLMap('map', {
+  defaultService: backend.id,
+  // hostRules: [
+  //   {
+  //     hosts: ['*'],
+  //     pathMatcher: 'allpaths',
+  //   },
+  // ],
+  // pathMatchers: [
+  //   {
+  //     name: 'allpaths',
+  //     defaultService: backend.id,
+  //   },
+  // ],
+});
+
+const proxy = new gcp.compute.TargetHttpProxy('proxy', {
+  urlMap: map.id,
+});
+
+const address = new gcp.compute.GlobalAddress('address');
+
+new gcp.compute.GlobalForwardingRule('rule', {
+  target: proxy.id,
+  ipAddress: address.address,
+  portRange: '80',
 });
 
 export const imageName = image.imageName;
