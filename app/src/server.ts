@@ -1,17 +1,19 @@
 import express from 'express';
 import logger from 'pino-http';
-import ip from 'public-ip';
+import axios from 'axios';
 
 const app = express();
 const PORT = 3000;
-const REVISION = 9;
+const REVISION = 18;
 
 app.use(logger());
 
 app.get('/', async (req, res) => {
+  const result = await axios.get('https://api.ipify.org');
+
   return res.status(200).json({
     revision: REVISION,
-    ip: await ip.publicIpv4(),
+    ip: result.data,
   });
 });
 
