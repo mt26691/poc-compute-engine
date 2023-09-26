@@ -51,7 +51,7 @@ const containers = `
     restartPolicy: Always
 `;
 
-const template = new gcp.compute.InstanceTemplate('instance', {
+const template = new gcp.compute.InstanceTemplate('instance-template', {
   machineType: 'e2-micro',
   metadata: {
     'gce-container-declaration': containers,
