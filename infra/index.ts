@@ -2,13 +2,13 @@ import * as pulumi from '@pulumi/pulumi';
 import * as gcp from '@pulumi/gcp';
 import * as docker from '@pulumi/docker';
 
-const IMAGE_NAME = 'compute-engine-app';
-const REVISION = 18;
+const APP_NAME = 'compute-engine-app';
+const REVISION = 21;
 const PORT = 3000;
-const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${IMAGE_NAME}:${REVISION}`;
+const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:${REVISION}`;
 const START_TIME_SEC = 30;
 
-const image = new docker.Image(IMAGE_NAME, {
+const image = new docker.Image(APP_NAME, {
   imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,
   build: {
     context: '../app',
@@ -44,14 +44,29 @@ const startupScript = `
   sudo -u linhvuvan2022 docker-credential-gcr configure-docker
   sudo groupadd docker
   sudo usermod -aG docker linhvuvan2022
-  sudo -u linhvuvan2022 docker run --name ${IMAGE_NAME} -d -p ${PORT}:3000 ${IMAGE_REPOSITORY}
-  sudo -u linhvuvan2022 docker logs -f ${IMAGE_NAME}
+  sudo -u linhvuvan2022 docker run --name ${APP_NAME} -d -p ${PORT}:3000 ${IMAGE_REPOSITORY}
+  sudo -u linhvuvan2022 docker logs -f ${APP_NAME}
+`;
+
+const containers = `
+  spec:
+    containers:
+      - name: ${APP_NAME}
+        image: ${IMAGE_REPOSITORY}
+        stdin: false
+        tty: false
+    restartPolicy: Always
 `;
 
 new gcp.compute.Instance('instance', {
   machineType: 'e2-micro',
   zone: 'us-central1-a',
-  metadataStartupScript: startupScript,
+  metadata: {
+    'gce-container-declaration': containers,
+    'google-logging-enabled': 'true',
+    'google-logging-use-fluentbit': 'true',
+  },
+  // metadataStartupScript: startupScript,
   bootDisk: {
     initializeParams: {
       image: 'projects/cos-cloud/global/images/family/cos-stable',
@@ -83,8 +98,8 @@ new gcp.compute.Instance('instance', {
 //   sudo -u linhvuvan2022 docker-credential-gcr configure-docker
 //   sudo groupadd docker
 //   sudo usermod -aG docker linhvuvan2022
-//   sudo -u linhvuvan2022 docker run --name ${IMAGE_NAME} -d -p ${PORT}:3000 ${IMAGE_REPOSITORY}
-//   sudo -u linhvuvan2022 docker logs -f ${IMAGE_NAME}
+//   sudo -u linhvuvan2022 docker run --name ${APP_NAME} -d -p ${PORT}:3000 ${IMAGE_REPOSITORY}
+//   sudo -u linhvuvan2022 docker logs -f ${APP_NAME}
 // `;
 
 // const template = new gcp.compute.InstanceTemplate('template', {

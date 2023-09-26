@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const app = express();
 const PORT = 3000;
-const REVISION = 18;
+const REVISION = 21;
 
 app.use(logger());
 
@@ -18,6 +18,8 @@ app.get('/', async (req, res) => {
 });
 
 app.get('/healthz', (req, res) => {
+  console.log('Accessing health check endpoint');
+
   return res.status(200).json({
     revision: REVISION,
   });
