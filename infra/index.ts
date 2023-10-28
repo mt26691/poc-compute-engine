@@ -170,7 +170,7 @@ new gcp.compute.GlobalForwardingRule('https-rule', {
 // http
 const redirectMap = new gcp.compute.URLMap('redirect-map', {
   defaultUrlRedirect: {
-    httpsRedirect: false,
+    httpsRedirect: true,
     stripQuery: false,
     redirectResponseCode: 'MOVED_PERMANENTLY_DEFAULT',
   },
