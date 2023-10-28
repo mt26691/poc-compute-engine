@@ -8,8 +8,8 @@ const PORT = 3000;
 const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:${REVISION}`;
 const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
-const MIN_REPLICAS = 2;
-const MAX_REPLICAS = 2;
+const MIN_REPLICAS = 1;
+const MAX_REPLICAS = 1;
 
 const image = new docker.Image(APP_NAME, {
   imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,
@@ -130,6 +130,7 @@ new gcp.compute.RegionAutoscaler('autoscaler', {
 const backend = new gcp.compute.BackendService('backend', {
   protocol: 'HTTP',
   healthChecks: health.id,
+  loadBalancingScheme: 'EXTERNAL_MANAGED',
   backends: [
     {
       group: group.instanceGroup,
@@ -137,20 +138,65 @@ const backend = new gcp.compute.BackendService('backend', {
   ],
 });
 
+const certificate = new gcp.compute.ManagedSslCertificate(
+  'managed-ssl-certificate',
+  {
+    name: 'linhvuvan-com',
+    managed: {
+      domains: ['linhvuvan.com'],
+    },
+  },
+);
+
+const { address: ipAddress } = new gcp.compute.GlobalAddress('address');
+
 const map = new gcp.compute.URLMap('map', {
   defaultService: backend.id,
 });
 
-const proxy = new gcp.compute.TargetHttpProxy('proxy', {
+// https
+const httpsProxy = new gcp.compute.TargetHttpsProxy('https-proxy', {
   urlMap: map.id,
+  sslCertificates: [certificate.id],
 });
 
-const { address: ipAddress } = new gcp.compute.GlobalAddress('address');
+new gcp.compute.GlobalForwardingRule('https-rule', {
+  target: httpsProxy.id,
+  ipAddress,
+  portRange: '443',
+  loadBalancingScheme: 'EXTERNAL_MANAGED',
+});
 
-new gcp.compute.GlobalForwardingRule('rule', {
-  target: proxy.id,
+// http
+const redirectMap = new gcp.compute.URLMap('redirect-map', {
+  defaultUrlRedirect: {
+    httpsRedirect: false,
+    stripQuery: false,
+    redirectResponseCode: 'MOVED_PERMANENTLY_DEFAULT',
+  },
+});
+
+const httpProxy = new gcp.compute.TargetHttpProxy('http-proxy', {
+  urlMap: redirectMap.id,
+});
+
+new gcp.compute.GlobalForwardingRule('http-rule', {
+  target: httpProxy.id,
   ipAddress,
   portRange: '80',
+  loadBalancingScheme: 'EXTERNAL_MANAGED',
 });
+
+// redirect http to https
+// const redirectMap = new gcp.compute.URLMap('redirect-map', {
+//   defaultUrlRedirect: {
+//     httpsRedirect: true,
+//     stripQuery: false,
+//   },
+// });
+
+// new gcp.compute.TargetHttpProxy('redirect-proxy', {
+//   urlMap: redirectMap.id,
+// });
 
 export const imageName = image.imageName;
