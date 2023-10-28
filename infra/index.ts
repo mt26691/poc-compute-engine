@@ -187,16 +187,4 @@ new gcp.compute.GlobalForwardingRule('http-rule', {
   loadBalancingScheme: 'EXTERNAL_MANAGED',
 });
 
-// redirect http to https
-// const redirectMap = new gcp.compute.URLMap('redirect-map', {
-//   defaultUrlRedirect: {
-//     httpsRedirect: true,
-//     stripQuery: false,
-//   },
-// });
-
-// new gcp.compute.TargetHttpProxy('redirect-proxy', {
-//   urlMap: redirectMap.id,
-// });
-
 export const imageName = image.imageName;
