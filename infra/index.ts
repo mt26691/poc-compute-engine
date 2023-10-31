@@ -1,6 +1,7 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as gcp from '@pulumi/gcp';
 import * as docker from '@pulumi/docker';
+import * as yaml from 'yaml';
 
 const APP_NAME = 'compute-engine-app';
 const REVISION = 25;
@@ -8,8 +9,33 @@ const PORT = 3000;
 const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:${REVISION}`;
 const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
-const MIN_REPLICAS = 1;
-const MAX_REPLICAS = 1;
+// const MIN_REPLICAS = 1;
+// const MAX_REPLICAS = 1;
+const NUMBER_OF_INSTANCES = 0;
+
+const buildMetadata = () => {
+  const container = yaml.stringify({
+    spec: {
+      containers: [
+        {
+          name: APP_NAME,
+          image: IMAGE_REPOSITORY,
+          stdin: false,
+          tty: false,
+        },
+      ],
+      restartPolicy: 'Always',
+    },
+  });
+
+  console.log('container', container);
+
+  return {
+    'gce-container-declaration': container,
+    'google-logging-enabled': 'true',
+    'google-logging-use-fluentbit': 'true',
+  };
+};
 
 const image = new docker.Image(APP_NAME, {
   imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,
@@ -41,23 +67,9 @@ new gcp.compute.Firewall('firewall', {
   sourceRanges: ['0.0.0.0/0'],
 });
 
-const containers = `
-  spec:
-    containers:
-      - name: ${APP_NAME}
-        image: ${IMAGE_REPOSITORY}
-        stdin: false
-        tty: false
-    restartPolicy: Always
-`;
-
 const template = new gcp.compute.InstanceTemplate('instance-template', {
   machineType: 'e2-micro',
-  metadata: {
-    'gce-container-declaration': containers,
-    'google-logging-enabled': 'true',
-    'google-logging-use-fluentbit': 'true',
-  },
+  metadata: buildMetadata(),
   disks: [
     { sourceImage: 'projects/cos-cloud/global/images/family/cos-stable' },
   ],
@@ -68,17 +80,10 @@ const template = new gcp.compute.InstanceTemplate('instance-template', {
       accessConfigs: [{}],
     },
   ],
-  serviceAccount: {
-    email: '819423612556-compute@developer.gserviceaccount.com',
-    scopes: [
-      'https://www.googleapis.com/auth/devstorage.read_only',
-      'https://www.googleapis.com/auth/logging.write',
-      'https://www.googleapis.com/auth/monitoring.write',
-      'https://www.googleapis.com/auth/service.management.readonly',
-      'https://www.googleapis.com/auth/servicecontrol',
-      'https://www.googleapis.com/auth/trace.append',
-    ],
-  },
+  // serviceAccount: {
+  //   email: '819423612556-compute@developer.gserviceaccount.com',
+  //   scopes: ['default'],
+  // },
 });
 
 const health = new gcp.compute.HealthCheck('health', {
@@ -110,22 +115,23 @@ const group = new gcp.compute.RegionInstanceGroupManager('group', {
     type: 'PROACTIVE',
     minimalAction: 'REPLACE',
     minReadySec: START_TIME_SEC,
-    maxSurgeFixed: Math.max(MIN_REPLICAS, NUMBER_OF_ZONES),
+    maxSurgeFixed: Math.max(NUMBER_OF_INSTANCES, NUMBER_OF_ZONES),
     maxUnavailableFixed: 0,
   },
+  targetSize: NUMBER_OF_INSTANCES,
 });
 
-new gcp.compute.RegionAutoscaler('autoscaler', {
-  target: group.id,
-  autoscalingPolicy: {
-    cooldownPeriod: START_TIME_SEC,
-    minReplicas: MIN_REPLICAS,
-    maxReplicas: MAX_REPLICAS,
-    cpuUtilization: {
-      target: 0.5,
-    },
-  },
-});
+// new gcp.compute.RegionAutoscaler('autoscaler', {
+//   target: group.id,
+//   autoscalingPolicy: {
+//     cooldownPeriod: START_TIME_SEC,
+//     minReplicas: MIN_REPLICAS,
+//     maxReplicas: MAX_REPLICAS,
+//     cpuUtilization: {
+//       target: 0.5,
+//     },
+//   },
+// });
 
 const backend = new gcp.compute.BackendService('backend', {
   protocol: 'HTTP',
