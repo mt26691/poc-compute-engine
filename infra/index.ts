@@ -9,8 +9,6 @@ const PORT = 3000;
 const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:${REVISION}`;
 const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
-// const MIN_REPLICAS = 1;
-// const MAX_REPLICAS = 1;
 const NUMBER_OF_INSTANCES = 0;
 
 const buildMetadata = () => {
@@ -120,18 +118,6 @@ const group = new gcp.compute.RegionInstanceGroupManager('group', {
   },
   targetSize: NUMBER_OF_INSTANCES,
 });
-
-// new gcp.compute.RegionAutoscaler('autoscaler', {
-//   target: group.id,
-//   autoscalingPolicy: {
-//     cooldownPeriod: START_TIME_SEC,
-//     minReplicas: MIN_REPLICAS,
-//     maxReplicas: MAX_REPLICAS,
-//     cpuUtilization: {
-//       target: 0.5,
-//     },
-//   },
-// });
 
 const backend = new gcp.compute.BackendService('backend', {
   protocol: 'HTTP',
