@@ -1,23 +1,10 @@
-import * as pulumi from '@pulumi/pulumi';
 import * as gcp from '@pulumi/gcp';
-import * as docker from '@pulumi/docker';
-import { buildMetadata } from './src/buildMetadata';
+import { APP_NAME, buildMetadata } from './src/buildMetadata';
 
-const APP_NAME = 'compute-engine-app';
-const REVISION = 25;
 const PORT = 3000;
-const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:${REVISION}`;
 const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
-const NUMBER_OF_INSTANCES = 0;
-
-const image = new docker.Image(APP_NAME, {
-  imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,
-  build: {
-    context: '../app',
-    platform: 'linux/amd64',
-  },
-});
+const NUMBER_OF_INSTANCES = 1;
 
 // VPC
 const network = new gcp.compute.Network('network', {
@@ -54,10 +41,10 @@ const template = new gcp.compute.InstanceTemplate('instance-template', {
       accessConfigs: [{}],
     },
   ],
-  // serviceAccount: {
-  //   email: '819423612556-compute@developer.gserviceaccount.com',
-  //   scopes: ['default'],
-  // },
+  serviceAccount: {
+    email: '819423612556-compute@developer.gserviceaccount.com',
+    scopes: ['cloud-platform'],
+  },
 });
 
 const health = new gcp.compute.HealthCheck('health', {
@@ -155,4 +142,11 @@ new gcp.compute.GlobalForwardingRule('http-rule', {
   loadBalancingScheme: 'EXTERNAL_MANAGED',
 });
 
-export const imageName = image.imageName;
+// dns
+new gcp.dns.RecordSet('record-set', {
+  managedZone: 'linhvuvan-com',
+  name: 'linhvuvan.com.',
+  type: 'A',
+  rrdatas: [ipAddress],
+  ttl: 300,
+});
