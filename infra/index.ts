@@ -1,15 +1,11 @@
 import * as gcp from '@pulumi/gcp';
-import * as pulumi from '@pulumi/pulumi';
 import { APP_NAME, buildMetadata } from './src/buildMetadata';
 
 const PORT = 3000;
-const START_TIME_SEC = 15;
+const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
-const NUMBER_OF_INSTANCES = 1;
-
-const config = new pulumi.Config('poc-compute-engine');
-
-const dbPassword = config.requireSecret('dbPassword');
+const MIN_REPLICAS = 1;
+const MAX_REPLICAS = 1;
 
 // VPC
 const network = new gcp.compute.Network('network', {
@@ -50,16 +46,6 @@ const template = new gcp.compute.InstanceTemplate('instance-template', {
     email: '819423612556-compute@developer.gserviceaccount.com',
     scopes: ['cloud-platform'],
   },
-  metadataStartupScript: pulumi.interpolate`#!/bin/bash
-    echo "Script verion 5"
-    echo "Running startup script"
-    whoami
-
-    echo "DB_PASSWORD=${dbPassword}" >> /tmp/test.txt
-    echo "TEST=linhvuvan" >> /tmp/test.txt
-
-    echo "Finished running startup script"
-  `,
 });
 
 const health = new gcp.compute.HealthCheck('health', {
@@ -92,23 +78,21 @@ const group = new gcp.compute.RegionInstanceGroupManager('group', {
     type: 'PROACTIVE',
     minimalAction: 'REPLACE',
     minReadySec: START_TIME_SEC,
-    maxSurgeFixed: Math.max(NUMBER_OF_INSTANCES, NUMBER_OF_ZONES),
+    maxSurgeFixed: Math.max(MIN_REPLICAS, NUMBER_OF_ZONES),
     maxUnavailableFixed: 0,
   },
+  targetSize: MIN_REPLICAS,
 });
 
 // autoscaler
-new gcp.compute.RegionAutoscaler('autoscaler', {
-  target: group.id,
-  autoscalingPolicy: {
-    cooldownPeriod: START_TIME_SEC,
-    minReplicas: NUMBER_OF_INSTANCES,
-    maxReplicas: NUMBER_OF_INSTANCES,
-    cpuUtilization: {
-      target: 0.5,
-    },
-  },
-});
+// new gcp.compute.RegionAutoscaler('autoscaler', {
+//   target: group.id,
+//   autoscalingPolicy: {
+//     cooldownPeriod: START_TIME_SEC,
+//     minReplicas: MIN_REPLICAS,
+//     maxReplicas: MAX_REPLICAS,
+//   },
+// });
 
 const backend = new gcp.compute.BackendService('backend', {
   protocol: 'HTTP',

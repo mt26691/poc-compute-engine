@@ -4,7 +4,9 @@ import * as pulumi from '@pulumi/pulumi';
 import * as docker from '@pulumi/docker';
 
 export const APP_NAME = 'compute-engine-app';
-const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:27`;
+const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:28`;
+
+const config = new pulumi.Config('poc-compute-engine');
 
 new docker.Image(APP_NAME, {
   imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,
@@ -23,6 +25,27 @@ export const buildMetadata = () => {
           image: IMAGE_REPOSITORY,
           stdin: false,
           tty: false,
+          // env: [
+          //   {
+          //     name: 'DB_PASSWORD',
+          //     value: config.requireSecret('dbPassword'),
+          //   },
+          // ],
+          volumeMounts: [
+            {
+              name: 'env',
+              mountPath: '/app',
+              readOnly: true,
+            },
+          ],
+        },
+      ],
+      volumes: [
+        {
+          name: 'env',
+          hostPath: {
+            path: '/tmp/app',
+          },
         },
       ],
       restartPolicy: 'Always',
@@ -31,11 +54,13 @@ export const buildMetadata = () => {
 
   return {
     'gce-container-declaration': container,
-    'google-logging-enabled': 'false',
-    'google-logging-use-fluentbit': 'false',
-    // 'startup-script': `#!/bin/bash
-    //   echo "Running startup script"
-    //   export DB_PASSWORD=$(gcloud secrets versions access latest --secret=db_password)
-    // `,
+    'google-logging-enabled': 'true',
+    'google-logging-use-fluentbit': 'true',
+    'startup-script': pulumi.interpolate`
+      #!/bin/bash
+      echo "Script verion 12"
+      mkdir /tmp/app
+      echo "DB_PASSWORD=${config.requireSecret('dbPassword')}" >> /tmp/app/.env
+    `,
   };
 };
