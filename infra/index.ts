@@ -45,6 +45,10 @@ const template = new gcp.compute.InstanceTemplate('instance-template', {
     email: '819423612556-compute@developer.gserviceaccount.com',
     scopes: ['cloud-platform'],
   },
+  metadataStartupScript: `#!/bin/bash
+    echo "Running startup script"
+    export DB_PASSWORD=linhvuvan
+  `,
 });
 
 const health = new gcp.compute.HealthCheck('health', {
@@ -54,6 +58,7 @@ const health = new gcp.compute.HealthCheck('health', {
   },
 });
 
+// instance group manager
 const group = new gcp.compute.RegionInstanceGroupManager('group', {
   region: 'us-central1',
   versions: [
@@ -79,7 +84,19 @@ const group = new gcp.compute.RegionInstanceGroupManager('group', {
     maxSurgeFixed: Math.max(NUMBER_OF_INSTANCES, NUMBER_OF_ZONES),
     maxUnavailableFixed: 0,
   },
-  targetSize: NUMBER_OF_INSTANCES,
+});
+
+// autoscaler
+new gcp.compute.RegionAutoscaler('autoscaler', {
+  target: group.id,
+  autoscalingPolicy: {
+    cooldownPeriod: START_TIME_SEC,
+    minReplicas: NUMBER_OF_INSTANCES,
+    maxReplicas: NUMBER_OF_INSTANCES,
+    cpuUtilization: {
+      target: 0.5,
+    },
+  },
 });
 
 const backend = new gcp.compute.BackendService('backend', {
