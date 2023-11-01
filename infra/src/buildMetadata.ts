@@ -31,8 +31,8 @@ export const buildMetadata = () => {
 
   return {
     'gce-container-declaration': container,
-    'google-logging-enabled': 'true',
-    'google-logging-use-fluentbit': 'true',
+    'google-logging-enabled': 'false',
+    'google-logging-use-fluentbit': 'false',
     // 'startup-script': `#!/bin/bash
     //   echo "Running startup script"
     //   export DB_PASSWORD=$(gcloud secrets versions access latest --secret=db_password)

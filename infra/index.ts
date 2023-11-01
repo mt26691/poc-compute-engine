@@ -1,10 +1,15 @@
 import * as gcp from '@pulumi/gcp';
+import * as pulumi from '@pulumi/pulumi';
 import { APP_NAME, buildMetadata } from './src/buildMetadata';
 
 const PORT = 3000;
-const START_TIME_SEC = 30;
+const START_TIME_SEC = 15;
 const NUMBER_OF_ZONES = 4;
 const NUMBER_OF_INSTANCES = 1;
+
+const config = new pulumi.Config('poc-compute-engine');
+
+const dbPassword = config.requireSecret('dbPassword');
 
 // VPC
 const network = new gcp.compute.Network('network', {
@@ -45,9 +50,15 @@ const template = new gcp.compute.InstanceTemplate('instance-template', {
     email: '819423612556-compute@developer.gserviceaccount.com',
     scopes: ['cloud-platform'],
   },
-  metadataStartupScript: `#!/bin/bash
+  metadataStartupScript: pulumi.interpolate`#!/bin/bash
+    echo "Script verion 5"
     echo "Running startup script"
-    export DB_PASSWORD=linhvuvan
+    whoami
+
+    echo "DB_PASSWORD=${dbPassword}" >> /tmp/test.txt
+    echo "TEST=linhvuvan" >> /tmp/test.txt
+
+    echo "Finished running startup script"
   `,
 });
 
