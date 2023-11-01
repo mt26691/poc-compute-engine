@@ -1,10 +1,11 @@
+require('dotenv').config();
 import express from 'express';
 import logger from 'pino-http';
 import axios from 'axios';
 
 const app = express();
 const PORT = 3000;
-const REVISION = 28;
+const REVISION = 33;
 
 app.use(logger());
 

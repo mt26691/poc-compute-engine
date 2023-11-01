@@ -4,7 +4,7 @@ import * as pulumi from '@pulumi/pulumi';
 import * as docker from '@pulumi/docker';
 
 export const APP_NAME = 'compute-engine-app';
-const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:28`;
+const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:33`;
 
 const config = new pulumi.Config('poc-compute-engine');
 
@@ -34,7 +34,7 @@ export const buildMetadata = () => {
           volumeMounts: [
             {
               name: 'env',
-              mountPath: '/app',
+              mountPath: '/app/.env',
               readOnly: true,
             },
           ],
@@ -44,7 +44,7 @@ export const buildMetadata = () => {
         {
           name: 'env',
           hostPath: {
-            path: '/tmp/app',
+            path: '/tmp/app/.env',
           },
         },
       ],
