@@ -1,7 +1,7 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as gcp from '@pulumi/gcp';
 import * as docker from '@pulumi/docker';
-import * as yaml from 'yaml';
+import { buildMetadata } from './src/buildMetadata';
 
 const APP_NAME = 'compute-engine-app';
 const REVISION = 25;
@@ -10,30 +10,6 @@ const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:${REVISION}`;
 const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
 const NUMBER_OF_INSTANCES = 0;
-
-const buildMetadata = () => {
-  const container = yaml.stringify({
-    spec: {
-      containers: [
-        {
-          name: APP_NAME,
-          image: IMAGE_REPOSITORY,
-          stdin: false,
-          tty: false,
-        },
-      ],
-      restartPolicy: 'Always',
-    },
-  });
-
-  console.log('container', container);
-
-  return {
-    'gce-container-declaration': container,
-    'google-logging-enabled': 'true',
-    'google-logging-use-fluentbit': 'true',
-  };
-};
 
 const image = new docker.Image(APP_NAME, {
   imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,
