@@ -1,11 +1,15 @@
 import * as gcp from '@pulumi/gcp';
+import * as pulumi from '@pulumi/pulumi';
 import { APP_NAME, buildMetadata } from './src/buildMetadata';
 
 const PORT = 3000;
 const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
-const MIN_REPLICAS = 1;
-const MAX_REPLICAS = 1;
+const NUMBER_OF_INSTANCES = 1;
+// const MIN_REPLICAS = 1;
+// const MAX_REPLICAS = 1;
+
+const config = new pulumi.Config('poc-compute-engine');
 
 // VPC
 const network = new gcp.compute.Network('network', {
@@ -31,7 +35,9 @@ new gcp.compute.Firewall('firewall', {
 
 const template = new gcp.compute.InstanceTemplate('instance-template', {
   machineType: 'e2-micro',
-  metadata: buildMetadata(),
+  metadata: buildMetadata({
+    DB_PASSWORD: config.getSecret('DB_PASSWORD'),
+  }),
   disks: [
     { sourceImage: 'projects/cos-cloud/global/images/family/cos-stable' },
   ],
@@ -78,10 +84,10 @@ const group = new gcp.compute.RegionInstanceGroupManager('group', {
     type: 'PROACTIVE',
     minimalAction: 'REPLACE',
     minReadySec: START_TIME_SEC,
-    maxSurgeFixed: Math.max(MIN_REPLICAS, NUMBER_OF_ZONES),
+    maxSurgeFixed: Math.max(NUMBER_OF_INSTANCES, NUMBER_OF_ZONES),
     maxUnavailableFixed: 0,
   },
-  targetSize: MIN_REPLICAS,
+  targetSize: NUMBER_OF_INSTANCES,
 });
 
 // autoscaler

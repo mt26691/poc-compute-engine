@@ -6,8 +6,6 @@ import * as docker from '@pulumi/docker';
 export const APP_NAME = 'compute-engine-app';
 const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:33`;
 
-const config = new pulumi.Config('poc-compute-engine');
-
 new docker.Image(APP_NAME, {
   imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,
   build: {
@@ -16,7 +14,13 @@ new docker.Image(APP_NAME, {
   },
 });
 
-export const buildMetadata = () => {
+type Env = {
+  DB_PASSWORD: pulumi.Output<string> | undefined;
+};
+
+export const buildMetadata = (env: Env) => {
+  const { DB_PASSWORD } = env;
+
   const container = yaml.stringify({
     spec: {
       containers: [
@@ -25,12 +29,6 @@ export const buildMetadata = () => {
           image: IMAGE_REPOSITORY,
           stdin: false,
           tty: false,
-          // env: [
-          //   {
-          //     name: 'DB_PASSWORD',
-          //     value: config.requireSecret('dbPassword'),
-          //   },
-          // ],
           volumeMounts: [
             {
               name: 'env',
@@ -58,9 +56,8 @@ export const buildMetadata = () => {
     'google-logging-use-fluentbit': 'true',
     'startup-script': pulumi.interpolate`
       #!/bin/bash
-      echo "Script verion 12"
       mkdir /tmp/app
-      echo "DB_PASSWORD=${config.requireSecret('dbPassword')}" >> /tmp/app/.env
+      echo "DB_PASSWORD=${DB_PASSWORD}" >> /tmp/app/.env
     `,
   };
 };
