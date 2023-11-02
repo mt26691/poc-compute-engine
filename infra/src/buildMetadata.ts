@@ -14,21 +14,18 @@ new docker.Image(APP_NAME, {
   },
 });
 
-type Env = {
-  DB_PASSWORD: pulumi.Output<string> | undefined;
-};
-
 type Metadata = {
-  startupScript: pulumi.Output<string>;
+  startupScript: string;
 };
 
-export const buildStartupScript = (env: Env) => {
-  const { DB_PASSWORD } = env;
-
-  return pulumi.interpolate`
+export const buildStartupScript = () => {
+  return `
     #!/bin/bash
-    mkdir /tmp/app
-    echo "DB_PASSWORD=${DB_PASSWORD}" >> /tmp/app/.env
+    START=$(date +%s)
+    docker pull google/cloud-sdk:alpine
+    docker run -t  google/cloud-sdk:alpine gcloud secrets versions access latest --secret=wms >> /tmp/.env
+    END=$(date +%s)
+    echo "Startup script completed in $((END-START)) seconds"
   `;
 };
 
@@ -56,7 +53,7 @@ export const buildMetadata = (metadata: Metadata) => {
         {
           name: 'env',
           hostPath: {
-            path: '/tmp/app/.env',
+            path: '/tmp/.env',
           },
         },
       ],

@@ -9,7 +9,7 @@ import {
 const PORT = 3000;
 const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
-const NUMBER_OF_INSTANCES = 0;
+const NUMBER_OF_INSTANCES = 1;
 // const MIN_REPLICAS = 1;
 // const MAX_REPLICAS = 1;
 
@@ -37,13 +37,11 @@ new gcp.compute.Firewall('firewall', {
   sourceRanges: ['0.0.0.0/0'],
 });
 
-const startupScript = buildStartupScript({
-  DB_PASSWORD: config.getSecret('dbPassword'),
-});
-
 const template = new gcp.compute.InstanceTemplate('instance-template', {
-  machineType: 'e2-micro',
-  metadata: buildMetadata({ startupScript }),
+  machineType: 'e2-standard-2',
+  metadata: buildMetadata({
+    startupScript: buildStartupScript(),
+  }),
   disks: [
     { sourceImage: 'projects/cos-cloud/global/images/family/cos-stable' },
   ],
