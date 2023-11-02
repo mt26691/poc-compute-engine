@@ -36,7 +36,7 @@ new gcp.compute.Firewall('firewall', {
 const template = new gcp.compute.InstanceTemplate('instance-template', {
   machineType: 'e2-micro',
   metadata: buildMetadata({
-    DB_PASSWORD: config.getSecret('DB_PASSWORD'),
+    DB_PASSWORD: config.getSecret('dbPassword'),
   }),
   disks: [
     { sourceImage: 'projects/cos-cloud/global/images/family/cos-stable' },
@@ -50,7 +50,7 @@ const template = new gcp.compute.InstanceTemplate('instance-template', {
   ],
   serviceAccount: {
     email: '819423612556-compute@developer.gserviceaccount.com',
-    scopes: ['cloud-platform'],
+    scopes: ['default'],
   },
 });
 
