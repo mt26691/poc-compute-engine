@@ -18,8 +18,22 @@ type Env = {
   DB_PASSWORD: pulumi.Output<string> | undefined;
 };
 
-export const buildMetadata = (env: Env) => {
+type Metadata = {
+  startupScript: pulumi.Output<string>;
+};
+
+export const buildStartupScript = (env: Env) => {
   const { DB_PASSWORD } = env;
+
+  return pulumi.interpolate`
+    #!/bin/bash
+    mkdir /tmp/app
+    echo "DB_PASSWORD=${DB_PASSWORD}" >> /tmp/app/.env
+  `;
+};
+
+export const buildMetadata = (metadata: Metadata) => {
+  const { startupScript } = metadata;
 
   const container = yaml.stringify({
     spec: {
@@ -54,10 +68,6 @@ export const buildMetadata = (env: Env) => {
     'gce-container-declaration': container,
     'google-logging-enabled': 'true',
     'google-logging-use-fluentbit': 'true',
-    'startup-script': pulumi.interpolate`
-      #!/bin/bash
-      mkdir /tmp/app
-      echo "DB_PASSWORD=${DB_PASSWORD}" >> /tmp/app/.env
-    `,
+    'startup-script': startupScript,
   };
 };
