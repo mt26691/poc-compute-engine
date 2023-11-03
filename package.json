@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "deploy": "cd infra && npm run deploy",
+    "destroy": "cd infra && npm run destroy"
+  }
+}
