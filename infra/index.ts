@@ -1,19 +1,12 @@
 import * as gcp from '@pulumi/gcp';
-import * as pulumi from '@pulumi/pulumi';
-import {
-  APP_NAME,
-  buildMetadata,
-  buildStartupScript,
-} from './src/buildMetadata';
+import { APP_NAME, buildMetadata } from './src/buildMetadata';
 
 const PORT = 3000;
 const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
-const NUMBER_OF_INSTANCES = 0;
+const NUMBER_OF_INSTANCES = 1;
 // const MIN_REPLICAS = 1;
 // const MAX_REPLICAS = 1;
-
-const config = new pulumi.Config('poc-compute-engine');
 
 // VPC
 const network = new gcp.compute.Network('network', {
@@ -39,9 +32,7 @@ new gcp.compute.Firewall('firewall', {
 
 const template = new gcp.compute.InstanceTemplate('instance-template', {
   machineType: 'e2-standard-2',
-  metadata: buildMetadata({
-    startupScript: buildStartupScript(),
-  }),
+  metadata: buildMetadata(),
   disks: [
     { sourceImage: 'projects/cos-cloud/global/images/family/cos-stable' },
   ],

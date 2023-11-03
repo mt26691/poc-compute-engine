@@ -4,6 +4,8 @@ import * as pulumi from '@pulumi/pulumi';
 import * as docker from '@pulumi/docker';
 
 export const APP_NAME = 'compute-engine-app';
+export const config = new pulumi.Config('poc-compute-engine');
+
 const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:33`;
 
 new docker.Image(APP_NAME, {
@@ -14,11 +16,7 @@ new docker.Image(APP_NAME, {
   },
 });
 
-type Metadata = {
-  startupScript: string;
-};
-
-export const buildStartupScript = () => {
+const buildStartupScript = () => {
   return `
     #!/bin/bash
     PROJECT_ID=linhvuvan-397815
@@ -36,9 +34,7 @@ export const buildStartupScript = () => {
   `;
 };
 
-export const buildMetadata = (metadata: Metadata) => {
-  const { startupScript } = metadata;
-
+export const buildMetadata = () => {
   const container = yaml.stringify({
     spec: {
       containers: [
@@ -47,6 +43,16 @@ export const buildMetadata = (metadata: Metadata) => {
           image: IMAGE_REPOSITORY,
           stdin: false,
           tty: false,
+          env: [
+            {
+              name: 'DB_NAME',
+              value: config.get('dbName'),
+            },
+            {
+              name: 'DB_USER',
+              value: 'root',
+            },
+          ],
           volumeMounts: [
             {
               name: 'env',
@@ -72,6 +78,6 @@ export const buildMetadata = (metadata: Metadata) => {
     'gce-container-declaration': container,
     'google-logging-enabled': 'true',
     'google-logging-use-fluentbit': 'true',
-    'startup-script': startupScript,
+    'startup-script': buildStartupScript(),
   };
 };

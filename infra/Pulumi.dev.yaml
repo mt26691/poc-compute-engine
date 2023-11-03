@@ -1,5 +1,6 @@
 config:
   gcp:project: linhvuvan-397815
   gcp:region: us-central1
+  poc-compute-engine:dbName: postgres
   poc-compute-engine:dbPassword:
     secure: AAABAPdmkteyqwfidQYFTHw6coIZK6AyIU90pAlpxyukWxpwrDvBDyEKsi5+2rs=
