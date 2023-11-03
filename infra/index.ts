@@ -9,7 +9,7 @@ import {
 const PORT = 3000;
 const START_TIME_SEC = 30;
 const NUMBER_OF_ZONES = 4;
-const NUMBER_OF_INSTANCES = 1;
+const NUMBER_OF_INSTANCES = 0;
 // const MIN_REPLICAS = 1;
 // const MAX_REPLICAS = 1;
 
