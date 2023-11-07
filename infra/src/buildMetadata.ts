@@ -6,7 +6,7 @@ import * as docker from '@pulumi/docker';
 export const APP_NAME = 'compute-engine-app';
 export const config = new pulumi.Config('poc-compute-engine');
 
-const IMAGE_REPOSITORY = `gcr.io/${gcp.config.project}/${APP_NAME}:33`;
+const IMAGE_REPOSITORY = `gcr.io/linhvuvan-image-holder/${APP_NAME}:33`;
 
 new docker.Image(APP_NAME, {
   imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,

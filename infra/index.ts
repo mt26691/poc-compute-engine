@@ -1,5 +1,6 @@
 import * as gcp from '@pulumi/gcp';
 import { APP_NAME, buildMetadata } from './src/buildMetadata';
+import { createInstanceServiceAccount } from './src/createInstanceServiceAccount';
 
 const PORT = 3000;
 const START_TIME_SEC = 30;
@@ -30,6 +31,15 @@ new gcp.compute.Firewall('firewall', {
   sourceRanges: ['0.0.0.0/0'],
 });
 
+const serviceAccount = createInstanceServiceAccount({
+  resourcePrefix: 'poc-sa',
+  projectName: 'linhvuvan-397815',
+  image: {
+    projectName: 'linhvuvan-image-holder',
+  },
+});
+
+// instance template
 const template = new gcp.compute.InstanceTemplate('instance-template', {
   machineType: 'e2-standard-2',
   metadata: buildMetadata(),
@@ -44,46 +54,46 @@ const template = new gcp.compute.InstanceTemplate('instance-template', {
     },
   ],
   serviceAccount: {
-    email: '819423612556-compute@developer.gserviceaccount.com',
+    // email: serviceAccount.email,
     scopes: ['cloud-platform'],
   },
 });
 
-const health = new gcp.compute.HealthCheck('health', {
-  httpHealthCheck: {
-    port: PORT,
-    requestPath: '/healthz',
-  },
-});
+// const health = new gcp.compute.HealthCheck('health', {
+//   httpHealthCheck: {
+//     port: PORT,
+//     requestPath: '/healthz',
+//   },
+// });
 
-// instance group manager
-const group = new gcp.compute.RegionInstanceGroupManager('group', {
-  region: 'us-central1',
-  versions: [
-    {
-      instanceTemplate: template.id,
-    },
-  ],
-  baseInstanceName: APP_NAME,
-  namedPorts: [
-    {
-      name: 'http',
-      port: PORT,
-    },
-  ],
-  autoHealingPolicies: {
-    healthCheck: health.id,
-    initialDelaySec: START_TIME_SEC,
-  },
-  updatePolicy: {
-    type: 'PROACTIVE',
-    minimalAction: 'REPLACE',
-    minReadySec: START_TIME_SEC,
-    maxSurgeFixed: Math.max(NUMBER_OF_INSTANCES, NUMBER_OF_ZONES),
-    maxUnavailableFixed: 0,
-  },
-  targetSize: NUMBER_OF_INSTANCES,
-});
+// // instance group manager
+// const group = new gcp.compute.RegionInstanceGroupManager('group', {
+//   region: 'us-central1',
+//   versions: [
+//     {
+//       instanceTemplate: template.id,
+//     },
+//   ],
+//   baseInstanceName: APP_NAME,
+//   namedPorts: [
+//     {
+//       name: 'http',
+//       port: PORT,
+//     },
+//   ],
+//   autoHealingPolicies: {
+//     healthCheck: health.id,
+//     initialDelaySec: START_TIME_SEC,
+//   },
+//   updatePolicy: {
+//     type: 'PROACTIVE',
+//     minimalAction: 'REPLACE',
+//     minReadySec: START_TIME_SEC,
+//     maxSurgeFixed: Math.max(NUMBER_OF_INSTANCES, NUMBER_OF_ZONES),
+//     maxUnavailableFixed: 0,
+//   },
+//   targetSize: NUMBER_OF_INSTANCES,
+// });
 
 // autoscaler
 // new gcp.compute.RegionAutoscaler('autoscaler', {
@@ -95,71 +105,71 @@ const group = new gcp.compute.RegionInstanceGroupManager('group', {
 //   },
 // });
 
-const backend = new gcp.compute.BackendService('backend', {
-  protocol: 'HTTP',
-  healthChecks: health.id,
-  loadBalancingScheme: 'EXTERNAL_MANAGED',
-  backends: [
-    {
-      group: group.instanceGroup,
-    },
-  ],
-});
+// const backend = new gcp.compute.BackendService('backend', {
+//   protocol: 'HTTP',
+//   healthChecks: health.id,
+//   loadBalancingScheme: 'EXTERNAL_MANAGED',
+//   backends: [
+//     {
+//       group: group.instanceGroup,
+//     },
+//   ],
+// });
 
-const certificate = new gcp.compute.ManagedSslCertificate(
-  'managed-ssl-certificate',
-  {
-    name: 'linhvuvan-com',
-    managed: {
-      domains: ['linhvuvan.com'],
-    },
-  },
-);
+// const certificate = new gcp.compute.ManagedSslCertificate(
+//   'managed-ssl-certificate',
+//   {
+//     name: 'linhvuvan-com',
+//     managed: {
+//       domains: ['linhvuvan.com'],
+//     },
+//   },
+// );
 
-const { address: ipAddress } = new gcp.compute.GlobalAddress('address');
+// const { address: ipAddress } = new gcp.compute.GlobalAddress('address');
 
-const map = new gcp.compute.URLMap('map', {
-  defaultService: backend.id,
-});
+// const map = new gcp.compute.URLMap('map', {
+//   defaultService: backend.id,
+// });
 
-// https
-const httpsProxy = new gcp.compute.TargetHttpsProxy('https-proxy', {
-  urlMap: map.id,
-  sslCertificates: [certificate.id],
-});
+// // https
+// const httpsProxy = new gcp.compute.TargetHttpsProxy('https-proxy', {
+//   urlMap: map.id,
+//   sslCertificates: [certificate.id],
+// });
 
-new gcp.compute.GlobalForwardingRule('https-rule', {
-  target: httpsProxy.id,
-  ipAddress,
-  portRange: '443',
-  loadBalancingScheme: 'EXTERNAL_MANAGED',
-});
+// new gcp.compute.GlobalForwardingRule('https-rule', {
+//   target: httpsProxy.id,
+//   ipAddress,
+//   portRange: '443',
+//   loadBalancingScheme: 'EXTERNAL_MANAGED',
+// });
 
-// http
-const redirectMap = new gcp.compute.URLMap('redirect-map', {
-  defaultUrlRedirect: {
-    httpsRedirect: true,
-    stripQuery: false,
-    redirectResponseCode: 'MOVED_PERMANENTLY_DEFAULT',
-  },
-});
+// // http
+// const redirectMap = new gcp.compute.URLMap('redirect-map', {
+//   defaultUrlRedirect: {
+//     httpsRedirect: true,
+//     stripQuery: false,
+//     redirectResponseCode: 'MOVED_PERMANENTLY_DEFAULT',
+//   },
+// });
 
-const httpProxy = new gcp.compute.TargetHttpProxy('http-proxy', {
-  urlMap: redirectMap.id,
-});
+// const httpProxy = new gcp.compute.TargetHttpProxy('http-proxy', {
+//   urlMap: redirectMap.id,
+// });
 
-new gcp.compute.GlobalForwardingRule('http-rule', {
-  target: httpProxy.id,
-  ipAddress,
-  portRange: '80',
-  loadBalancingScheme: 'EXTERNAL_MANAGED',
-});
+// new gcp.compute.GlobalForwardingRule('http-rule', {
+//   target: httpProxy.id,
+//   ipAddress,
+//   portRange: '80',
+//   loadBalancingScheme: 'EXTERNAL_MANAGED',
+// });
 
-// dns
-new gcp.dns.RecordSet('record-set', {
-  managedZone: 'linhvuvan-com',
-  name: 'linhvuvan.com.',
-  type: 'A',
-  rrdatas: [ipAddress],
-  ttl: 300,
-});
+// // dns
+// new gcp.dns.RecordSet('record-set', {
+//   managedZone: 'linhvuvan-com',
+//   name: 'linhvuvan.com.',
+//   type: 'A',
+//   rrdatas: [ipAddress],
+//   ttl: 300,
+// });
