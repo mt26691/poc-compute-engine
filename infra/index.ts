@@ -9,6 +9,11 @@ import { createInstanceGroupManager } from './src/createInstanceGroupManager';
 import { createInstanceTemplate } from './src/createInstanceTemplate';
 import { createDockerImage } from './src/createDockerImage';
 
+export type Image = {
+  url: string;
+  project: string;
+};
+
 const PORT = 3000;
 const START_TIME_SEC = 30;
 const NUMBER_OF_INSTANCES = 1;
@@ -20,7 +25,7 @@ const healthCheck: gcp.compute.HealthCheckArgs = {
     requestPath: '/healthz',
   },
 };
-const image = {
+const image: Image = {
   url: `gcr.io/linhvuvan-image-holder/compute-engine-app:33`,
   project: IMAGE_PROJECT,
 };
@@ -42,6 +47,7 @@ const main = () => {
     serviceAccount,
   });
 
+  return;
   const instanceGroupManager = createInstanceGroupManager({
     healthCheck,
     instanceTemplate: instanceTemplate,

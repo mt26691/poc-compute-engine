@@ -1,11 +1,10 @@
 import * as gcp from '@pulumi/gcp';
 import * as pulumi from '@pulumi/pulumi';
+import { Image } from '..';
 
 type CreateInstanceServiceAccountParams = {
   project: string;
-  image: {
-    project: string;
-  };
+  image: Image;
 };
 
 export const createInstanceServiceAccount = (

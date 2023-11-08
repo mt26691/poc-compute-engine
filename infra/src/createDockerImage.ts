@@ -1,10 +1,8 @@
 import * as docker from '@pulumi/docker';
-import * as pulumi from '@pulumi/pulumi';
+import { Image } from '..';
 
 type CreateDockerImageParams = {
-  image: {
-    url: string;
-  };
+  image: Image;
 };
 
 export const createDockerImage = (params: CreateDockerImageParams) => {
