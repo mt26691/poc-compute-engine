@@ -2,33 +2,28 @@ import * as gcp from '@pulumi/gcp';
 import * as pulumi from '@pulumi/pulumi';
 
 type CreateInstanceServiceAccountParams = {
-  resourcePrefix: string;
-  projectName: string;
+  project: string;
   image: {
-    projectName: string;
+    project: string;
   };
 };
 
 export const createInstanceServiceAccount = (
   params: CreateInstanceServiceAccountParams,
 ) => {
-  // const accountId = params.resourcePrefix;
-  // const serviceAccount = new gcp.serviceaccount.Account(
-  //   `${params.resourcePrefix}-service-account`,
-  //   {
-  //     accountId,
-  //     displayName: accountId,
-  //     project: params.projectName,
-  //   },
-  // );
+  const serviceAccount = new gcp.serviceaccount.Account('service-account', {
+    accountId: 'linvuvan',
+    displayName: 'linhvuvan',
+    project: params.project,
+  });
 
-  new gcp.projects.IAMBinding(`${params.resourcePrefix}-4`, {
+  new gcp.projects.IAMBinding('iam-binding', {
     role: 'roles/storage.objectViewer',
     members: [
       pulumi.interpolate`serviceAccount:819423612556-compute@developer.gserviceaccount.com`,
     ],
-    project: params.image.projectName,
+    project: params.image.project,
   });
 
-  // return serviceAccount;
+  return serviceAccount;
 };

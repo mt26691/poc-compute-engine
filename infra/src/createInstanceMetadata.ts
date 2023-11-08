@@ -34,7 +34,7 @@ const buildStartupScript = () => {
   `;
 };
 
-export const buildMetadata = () => {
+export const createInstanceMetadata = () => {
   const container = yaml.stringify({
     spec: {
       containers: [
