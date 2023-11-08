@@ -25,7 +25,6 @@ const image = {
   project: IMAGE_PROJECT,
 };
 
-// VPC
 const network = createNetwork();
 const subnetwork = createSubnetwork(network);
 
