@@ -10,6 +10,7 @@ import { createInstanceTemplate } from './src/createInstanceTemplate';
 import { createDockerImage } from './src/createDockerImage';
 
 export type Image = {
+  name: string;
   url: string;
   project: string;
 };
@@ -26,6 +27,7 @@ const healthCheck: gcp.compute.HealthCheckArgs = {
   },
 };
 const image: Image = {
+  name: 'compute-engine-app',
   url: `gcr.io/linhvuvan-image-holder/compute-engine-app:33`,
   project: IMAGE_PROJECT,
 };
@@ -36,6 +38,7 @@ const main = () => {
 
   createDockerImage({ image });
 
+  // wms
   const serviceAccount = createInstanceServiceAccount({
     project: CURRENT_PROJECT,
     image,
@@ -45,6 +48,7 @@ const main = () => {
     network,
     subnetwork,
     serviceAccount,
+    image,
   });
 
   return;

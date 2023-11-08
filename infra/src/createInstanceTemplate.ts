@@ -1,10 +1,12 @@
 import * as gcp from '@pulumi/gcp';
 import { createInstanceMetadata } from './createInstanceMetadata';
+import { Image } from '..';
 
 type CreateInstanceTemplateParams = {
   network: gcp.compute.Network;
   subnetwork: gcp.compute.Subnetwork;
   serviceAccount: gcp.serviceaccount.Account;
+  image: Image;
 };
 
 export const createInstanceTemplate = (
@@ -14,7 +16,7 @@ export const createInstanceTemplate = (
     'instance-template',
     {
       machineType: 'e2-standard-2',
-      metadata: createInstanceMetadata(),
+      metadata: createInstanceMetadata({ image: params.image }),
       disks: [
         { sourceImage: 'projects/cos-cloud/global/images/family/cos-stable' },
       ],
@@ -27,7 +29,7 @@ export const createInstanceTemplate = (
       ],
       serviceAccount: {
         email: params.serviceAccount.email,
-        scopes: ['cloud-platform'],
+        scopes: [],
       },
     },
   );

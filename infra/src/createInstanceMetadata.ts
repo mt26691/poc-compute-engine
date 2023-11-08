@@ -1,5 +1,6 @@
 import * as yaml from 'yaml';
 import * as pulumi from '@pulumi/pulumi';
+import { Image } from '..';
 
 export const APP_NAME = 'compute-engine-app';
 export const config = new pulumi.Config('poc-compute-engine');
@@ -24,13 +25,17 @@ const createStartupScript = () => {
   `;
 };
 
-export const createInstanceMetadata = () => {
+type CreateInstanceMetadataParams = {
+  image: Image
+};
+
+export const createInstanceMetadata = (params: CreateInstanceMetadataParams) => {
   const container = yaml.stringify({
     spec: {
       containers: [
         {
-          name: APP_NAME,
-          image: IMAGE_REPOSITORY,
+          name: params.image.name,
+          image: params.image.url,
           stdin: false,
           tty: false,
           env: [
