@@ -5,98 +5,54 @@ import { createNetwork } from './src/createNetwork';
 import { createSubnetwork } from './src/createSubnetwork';
 import { createApplicationLoadBalancer } from './src/createApplicationLoadBalancer';
 import { createBackend } from './src/createBackend';
+import { createSslCertificate } from './src/createSslCertificate';
+import { createInstanceGroupManager } from './src/createInstanceGroupManager';
+import { createInstanceTemplate } from './src/createInstanceTemplate';
 
 const PORT = 3000;
 const START_TIME_SEC = 30;
-const NUMBER_OF_ZONES = 4;
 const NUMBER_OF_INSTANCES = 1;
-
-// VPC
-const network = createNetwork();
-const subnet = createSubnetwork(network);
-
-const serviceAccount = createInstanceServiceAccount({
-  project: 'linhvuvan-397815',
-  image: {
-    project: 'linhvuvan-image-holder',
-  },
-});
-
-// instance template
-const template = new gcp.compute.InstanceTemplate('instance-template', {
-  machineType: 'e2-standard-2',
-  metadata: createInstanceMetadata(),
-  disks: [
-    { sourceImage: 'projects/cos-cloud/global/images/family/cos-stable' },
-  ],
-  networkInterfaces: [
-    {
-      network: network.id,
-      subnetwork: subnet.id,
-      accessConfigs: [{}],
-    },
-  ],
-  serviceAccount: {
-    email: serviceAccount.email,
-    scopes: ['cloud-platform'],
-  },
-});
-
-const health = new gcp.compute.HealthCheck('health', {
+const CURRENT_PROJECT = 'linhvuvan-397815';
+const IMAGE_PROJECT = 'linhvuvan-image-holder';
+const healthCheck: gcp.compute.HealthCheckArgs = {
   httpHealthCheck: {
     port: PORT,
     requestPath: '/healthz',
   },
+};
+
+// VPC
+const network = createNetwork();
+const subnetwork = createSubnetwork(network);
+
+const serviceAccount = createInstanceServiceAccount({
+  project: CURRENT_PROJECT,
+  image: {
+    project: IMAGE_PROJECT,
+  },
 });
 
-// instance group manager
-const group = new gcp.compute.RegionInstanceGroupManager('group', {
-  region: 'us-central1',
-  versions: [
-    {
-      instanceTemplate: template.id,
-    },
-  ],
+const instanceTemplate = createInstanceTemplate({
+  network,
+  subnetwork,
+  serviceAccount,
+});
+
+const instanceGroupManager = createInstanceGroupManager({
+  healthCheck,
+  instanceTemplate: instanceTemplate,
   baseInstanceName: APP_NAME,
-  namedPorts: [
-    {
-      name: 'http',
-      port: PORT,
-    },
-  ],
-  autoHealingPolicies: {
-    healthCheck: health.id,
-    initialDelaySec: START_TIME_SEC,
-  },
-  updatePolicy: {
-    type: 'PROACTIVE',
-    minimalAction: 'REPLACE',
-    minReadySec: START_TIME_SEC,
-    maxSurgeFixed: Math.max(NUMBER_OF_INSTANCES, NUMBER_OF_ZONES),
-    maxUnavailableFixed: 0,
-  },
-  targetSize: NUMBER_OF_INSTANCES,
+  containerPort: PORT,
+  numberOfInstances: NUMBER_OF_INSTANCES,
+  startTimeSec: START_TIME_SEC,
 });
 
 const backend = createBackend({
-  healthCheck: {
-    httpHealthCheck: {
-      port: PORT,
-      requestPath: '/healthz',
-    },
-  },
-  instanceGroupManager: group,
+  healthCheck,
+  instanceGroupManager,
 });
 
-const sslCertificate = new gcp.compute.ManagedSslCertificate(
-  'managed-ssl-certificate',
-  {
-    name: 'linhvuvan-com',
-    managed: {
-      domains: ['linhvuvan.com'],
-    },
-  },
-);
+const sslCertificate = createSslCertificate();
 
 createApplicationLoadBalancer({
   backend,

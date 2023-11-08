@@ -19,9 +19,7 @@ export const createInstanceServiceAccount = (
 
   new gcp.projects.IAMBinding('iam-binding', {
     role: 'roles/storage.objectViewer',
-    members: [
-      pulumi.interpolate`serviceAccount:819423612556-compute@developer.gserviceaccount.com`,
-    ],
+    members: [pulumi.interpolate`serviceAccount:${serviceAccount.email}`],
     project: params.image.project,
   });
 
