@@ -1,22 +1,12 @@
-import * as gcp from '@pulumi/gcp';
 import * as yaml from 'yaml';
 import * as pulumi from '@pulumi/pulumi';
-import * as docker from '@pulumi/docker';
 
 export const APP_NAME = 'compute-engine-app';
 export const config = new pulumi.Config('poc-compute-engine');
 
 const IMAGE_REPOSITORY = `gcr.io/linhvuvan-image-holder/${APP_NAME}:33`;
 
-new docker.Image(APP_NAME, {
-  imageName: pulumi.interpolate`${IMAGE_REPOSITORY}`,
-  build: {
-    context: '../app',
-    platform: 'linux/amd64',
-  },
-});
-
-const buildStartupScript = () => {
+const createStartupScript = () => {
   return `
     #!/bin/bash
     PROJECT_ID=linhvuvan-397815
@@ -78,6 +68,6 @@ export const createInstanceMetadata = () => {
     'gce-container-declaration': container,
     'google-logging-enabled': 'true',
     'google-logging-use-fluentbit': 'true',
-    'startup-script': buildStartupScript(),
+    'startup-script': createStartupScript(),
   };
 };

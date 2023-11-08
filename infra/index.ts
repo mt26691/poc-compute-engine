@@ -1,5 +1,4 @@
 import * as gcp from '@pulumi/gcp';
-import { APP_NAME, createInstanceMetadata } from './src/createInstanceMetadata';
 import { createInstanceServiceAccount } from './src/createInstanceServiceAccount';
 import { createNetwork } from './src/createNetwork';
 import { createSubnetwork } from './src/createSubnetwork';
@@ -8,6 +7,7 @@ import { createBackend } from './src/createBackend';
 import { createSslCertificate } from './src/createSslCertificate';
 import { createInstanceGroupManager } from './src/createInstanceGroupManager';
 import { createInstanceTemplate } from './src/createInstanceTemplate';
+import { createDockerImage } from './src/createDockerImage';
 
 const PORT = 3000;
 const START_TIME_SEC = 30;
@@ -20,16 +20,20 @@ const healthCheck: gcp.compute.HealthCheckArgs = {
     requestPath: '/healthz',
   },
 };
+const image = {
+  url: `gcr.io/linhvuvan-image-holder/compute-engine-app:33`,
+  project: IMAGE_PROJECT,
+};
 
 // VPC
 const network = createNetwork();
 const subnetwork = createSubnetwork(network);
 
+createDockerImage({ image });
+
 const serviceAccount = createInstanceServiceAccount({
   project: CURRENT_PROJECT,
-  image: {
-    project: IMAGE_PROJECT,
-  },
+  image,
 });
 
 const instanceTemplate = createInstanceTemplate({
@@ -41,7 +45,7 @@ const instanceTemplate = createInstanceTemplate({
 const instanceGroupManager = createInstanceGroupManager({
   healthCheck,
   instanceTemplate: instanceTemplate,
-  baseInstanceName: APP_NAME,
+  baseInstanceName: 'compute-engine-app',
   containerPort: PORT,
   numberOfInstances: NUMBER_OF_INSTANCES,
   startTimeSec: START_TIME_SEC,
