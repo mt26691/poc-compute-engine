@@ -13,7 +13,7 @@ export const createInstanceGroupManager = (
   params: CreateInstanceGroupManagerParams,
 ) => {
   const healthCheck = new gcp.compute.HealthCheck(
-    'igm-healthCheck-check',
+    'igm-health-check',
     params.healthCheck,
   );
 

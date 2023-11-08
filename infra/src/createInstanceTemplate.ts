@@ -29,7 +29,7 @@ export const createInstanceTemplate = (
       ],
       serviceAccount: {
         email: params.serviceAccount.email,
-        scopes: [],
+        scopes: ['cloud-platform'],
       },
     },
   );

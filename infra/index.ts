@@ -51,7 +51,6 @@ const main = () => {
     image,
   });
 
-  return;
   const instanceGroupManager = createInstanceGroupManager({
     healthCheck,
     instanceTemplate: instanceTemplate,
