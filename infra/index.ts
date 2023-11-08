@@ -25,39 +25,43 @@ const image = {
   project: IMAGE_PROJECT,
 };
 
-const network = createNetwork();
-const subnetwork = createSubnetwork(network);
+const main = () => {
+  const network = createNetwork();
+  const subnetwork = createSubnetwork(network);
 
-createDockerImage({ image });
+  createDockerImage({ image });
 
-const serviceAccount = createInstanceServiceAccount({
-  project: CURRENT_PROJECT,
-  image,
-});
+  const serviceAccount = createInstanceServiceAccount({
+    project: CURRENT_PROJECT,
+    image,
+  });
 
-const instanceTemplate = createInstanceTemplate({
-  network,
-  subnetwork,
-  serviceAccount,
-});
+  const instanceTemplate = createInstanceTemplate({
+    network,
+    subnetwork,
+    serviceAccount,
+  });
 
-const instanceGroupManager = createInstanceGroupManager({
-  healthCheck,
-  instanceTemplate: instanceTemplate,
-  baseInstanceName: 'compute-engine-app',
-  containerPort: PORT,
-  numberOfInstances: NUMBER_OF_INSTANCES,
-  startTimeSec: START_TIME_SEC,
-});
+  const instanceGroupManager = createInstanceGroupManager({
+    healthCheck,
+    instanceTemplate: instanceTemplate,
+    baseInstanceName: 'compute-engine-app',
+    containerPort: PORT,
+    numberOfInstances: NUMBER_OF_INSTANCES,
+    startTimeSec: START_TIME_SEC,
+  });
 
-const backend = createBackend({
-  healthCheck,
-  instanceGroupManager,
-});
+  const backend = createBackend({
+    healthCheck,
+    instanceGroupManager,
+  });
 
-const sslCertificate = createSslCertificate();
+  const sslCertificate = createSslCertificate();
 
-createApplicationLoadBalancer({
-  backend,
-  sslCertificate,
-});
+  createApplicationLoadBalancer({
+    backend,
+    sslCertificate,
+  });
+};
+
+main();
