@@ -1,6 +1,6 @@
 import * as gcp from '@pulumi/gcp';
 import { createInstanceMetadata } from './createInstanceMetadata';
-import { Image } from '..';
+import { Image } from './';
 
 type CreateInstanceTemplateParams = {
   network: gcp.compute.Network;

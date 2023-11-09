@@ -1,6 +1,6 @@
 import * as gcp from '@pulumi/gcp';
 import * as pulumi from '@pulumi/pulumi';
-import { Image } from '..';
+import { Image } from './';
 
 type CreateInstanceServiceAccountParams = {
   project: string;

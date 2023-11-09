@@ -1,6 +1,6 @@
 import * as yaml from 'yaml';
 import * as pulumi from '@pulumi/pulumi';
-import { Image } from '..';
+import { Image } from './';
 
 export const APP_NAME = 'compute-engine-app';
 export const config = new pulumi.Config('poc-compute-engine');

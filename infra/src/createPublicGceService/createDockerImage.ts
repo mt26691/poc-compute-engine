@@ -1,5 +1,5 @@
 import * as docker from '@pulumi/docker';
-import { Image } from '..';
+import { Image } from './';
 
 type CreateDockerImageParams = {
   image: Image;
