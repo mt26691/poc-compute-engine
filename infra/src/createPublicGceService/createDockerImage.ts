@@ -2,11 +2,12 @@ import * as docker from '@pulumi/docker';
 import { Image } from './';
 
 type CreateDockerImageParams = {
+  resourcePrefix: string;
   image: Image;
 };
 
 export const createDockerImage = (params: CreateDockerImageParams) => {
-  new docker.Image('docker', {
+  new docker.Image(`${params.resourcePrefix}-docker`, {
     imageName: params.image.url,
     build: {
       context: '../app',

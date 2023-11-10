@@ -1,6 +1,7 @@
 import { createPublicGceService } from './src/createPublicGceService';
 
 createPublicGceService({
+  resourcePrefix: 'poc-compute-engine',
   image: {
     name: 'poc-compute-engine',
     url: 'gcr.io/tat-den/poc-compute-engine:33',

@@ -1,11 +1,15 @@
 import * as gcp from '@pulumi/gcp';
 
-export const createNetwork = () => {
-  const network = new gcp.compute.Network('network', {
+type CreateNetworkParams = {
+  resourcePrefix: string;
+};
+
+export const createNetwork = (params: CreateNetworkParams) => {
+  const network = new gcp.compute.Network(`${params.resourcePrefix}-network`, {
     autoCreateSubnetworks: false,
   });
 
-  new gcp.compute.Firewall('firewall', {
+  new gcp.compute.Firewall(`${params.resourcePrefix}-firewall`, {
     network: network.selfLink,
     allows: [
       {

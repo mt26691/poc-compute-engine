@@ -16,6 +16,7 @@ export type Image = {
 };
 
 type CreatePublicGceServiceParams = {
+  resourcePrefix: string;
   image: Image;
   containerPort: number;
   startTimeSec: number;
@@ -24,20 +25,29 @@ type CreatePublicGceServiceParams = {
   healthCheck: gcp.compute.HealthCheckArgs;
 };
 
-export const createPublicGceService = (params: CreatePublicGceServiceParams) => {
-  const network = createNetwork();
-  const subnetwork = createSubnetwork(network);
+export const createPublicGceService = (
+  params: CreatePublicGceServiceParams,
+) => {
+  const network = createNetwork({
+    resourcePrefix: params.resourcePrefix,
+  });
+  const subnetwork = createSubnetwork({
+    resourcePrefix: params.resourcePrefix,
+    network,
+  });
 
   createDockerImage({
+    resourcePrefix: params.resourcePrefix,
+    image: params.image,
+  });
+
+  const serviceAccount = createInstanceServiceAccount({
+    resourcePrefix: params.resourcePrefix,
+    project: params.project,
     image: params.image,
   });
 
   return;
-
-  const serviceAccount = createInstanceServiceAccount({
-    project: params.project,
-    image: params.image,
-  });
 
   const instanceTemplate = createInstanceTemplate({
     network,

@@ -1,0 +1,3 @@
+config:
+  gcp:project: chi-dau
+  gcp:region: us-central1
