@@ -14,9 +14,8 @@ export const createInstanceServiceAccount = (
   const serviceAccount = new gcp.serviceaccount.Account(
     `${params.resourcePrefix}-service-account`,
     {
-      accountId: 'linvuvan',
-      displayName: 'linhvuvan',
-      project: params.project,
+      accountId: params.resourcePrefix,
+      displayName: params.resourcePrefix,
     },
   );
 
