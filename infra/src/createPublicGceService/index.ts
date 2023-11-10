@@ -9,59 +9,70 @@ import { createInstanceGroupManager } from './createInstanceGroupManager';
 import { createInstanceTemplate } from './createInstanceTemplate';
 import { createDockerImage } from './createDockerImage';
 
+// const PORT = 3000;
+// const START_TIME_SEC = 30;
+// const NUMBER_OF_INSTANCES = 1;
+// const CURRENT_PROJECT = 'linhvuvan-397815';
+// const IMAGE_PROJECT = 'linhvuvan-image-holder';
+// const healthCheck: gcp.compute.HealthCheckArgs = {
+//   httpHealthCheck: {
+//     port: PORT,
+//     requestPath: '/healthz',
+//   },
+// };
+// const image: Image = {
+//   name: 'compute-engine-app',
+//   url: `gcr.io/linhvuvan-image-holder/compute-engine-app:33`,
+//   project: IMAGE_PROJECT,
+// };
+
 export type Image = {
   name: string;
   url: string;
   project: string;
 };
 
-const PORT = 3000;
-const START_TIME_SEC = 30;
-const NUMBER_OF_INSTANCES = 1;
-const CURRENT_PROJECT = 'linhvuvan-397815';
-const IMAGE_PROJECT = 'linhvuvan-image-holder';
-const healthCheck: gcp.compute.HealthCheckArgs = {
-  httpHealthCheck: {
-    port: PORT,
-    requestPath: '/healthz',
-  },
-};
-const image: Image = {
-  name: 'compute-engine-app',
-  url: `gcr.io/linhvuvan-image-holder/compute-engine-app:33`,
-  project: IMAGE_PROJECT,
+type CreatePublicGceServiceParams = {
+  image: Image;
+  port: number;
+  startTimeSec: number;
+  numberOfInstances: number;
+  project: string;
+  healthCheck: gcp.compute.HealthCheckArgs;
 };
 
-const main = () => {
+export const main = (params: CreatePublicGceServiceParams) => {
   const network = createNetwork();
   const subnetwork = createSubnetwork(network);
 
-  createDockerImage({ image });
+  createDockerImage({
+    image: params.image,
+  });
 
   // wms
   const serviceAccount = createInstanceServiceAccount({
-    project: CURRENT_PROJECT,
-    image,
+    project: params.project,
+    image: params.image,
   });
 
   const instanceTemplate = createInstanceTemplate({
     network,
     subnetwork,
     serviceAccount,
-    image,
+    image: params.image,
   });
 
   const instanceGroupManager = createInstanceGroupManager({
-    healthCheck,
+    healthCheck: params.healthCheck,
     instanceTemplate: instanceTemplate,
     baseInstanceName: 'compute-engine-app',
-    containerPort: PORT,
-    numberOfInstances: NUMBER_OF_INSTANCES,
-    startTimeSec: START_TIME_SEC,
+    containerPort: params.port,
+    numberOfInstances: params.numberOfInstances,
+    startTimeSec: params.startTimeSec,
   });
 
   const backend = createBackend({
-    healthCheck,
+    healthCheck: params.healthCheck,
     instanceGroupManager,
   });
 
@@ -72,5 +83,3 @@ const main = () => {
     sslCertificate,
   });
 };
-
-main();
