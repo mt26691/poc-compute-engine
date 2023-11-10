@@ -19,6 +19,7 @@ export const createInstanceTemplate = (
     {
       machineType: 'e2-standard-2',
       metadata: createInstanceMetadata({
+        resourcePrefix: params.resourcePrefix,
         image: params.image,
         secret: params.secret,
       }),

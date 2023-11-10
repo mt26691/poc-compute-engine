@@ -2,6 +2,7 @@ import * as yaml from 'yaml';
 import { Image, Secret } from './';
 
 type CreateInstanceMetadataParams = {
+  resourcePrefix: string;
   image: Image;
   secret: Secret;
 };
@@ -14,7 +15,7 @@ export const createInstanceMetadata = (
       spec: {
         containers: [
           {
-            name: params.image.url,
+            name: params.resourcePrefix,
             image: params.image.url,
             stdin: false,
             tty: false,
