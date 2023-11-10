@@ -9,23 +9,6 @@ import { createInstanceGroupManager } from './createInstanceGroupManager';
 import { createInstanceTemplate } from './createInstanceTemplate';
 import { createDockerImage } from './createDockerImage';
 
-// const PORT = 3000;
-// const START_TIME_SEC = 30;
-// const NUMBER_OF_INSTANCES = 1;
-// const CURRENT_PROJECT = 'linhvuvan-397815';
-// const IMAGE_PROJECT = 'linhvuvan-image-holder';
-// const healthCheck: gcp.compute.HealthCheckArgs = {
-//   httpHealthCheck: {
-//     port: PORT,
-//     requestPath: '/healthz',
-//   },
-// };
-// const image: Image = {
-//   name: 'compute-engine-app',
-//   url: `gcr.io/linhvuvan-image-holder/compute-engine-app:33`,
-//   project: IMAGE_PROJECT,
-// };
-
 export type Image = {
   name: string;
   url: string;
@@ -34,20 +17,22 @@ export type Image = {
 
 type CreatePublicGceServiceParams = {
   image: Image;
-  port: number;
+  containerPort: number;
   startTimeSec: number;
   numberOfInstances: number;
   project: string;
   healthCheck: gcp.compute.HealthCheckArgs;
 };
 
-export const main = (params: CreatePublicGceServiceParams) => {
+export const createPublicGceService = (params: CreatePublicGceServiceParams) => {
   const network = createNetwork();
   const subnetwork = createSubnetwork(network);
 
   createDockerImage({
     image: params.image,
   });
+
+  return;
 
   const serviceAccount = createInstanceServiceAccount({
     project: params.project,
@@ -65,7 +50,7 @@ export const main = (params: CreatePublicGceServiceParams) => {
     healthCheck: params.healthCheck,
     instanceTemplate: instanceTemplate,
     baseInstanceName: 'compute-engine-app',
-    containerPort: params.port,
+    containerPort: params.containerPort,
     numberOfInstances: params.numberOfInstances,
     startTimeSec: params.startTimeSec,
   });
