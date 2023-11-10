@@ -1,5 +1,4 @@
 import * as gcp from '@pulumi/gcp';
-import * as pulumi from '@pulumi/pulumi';
 import { createInstanceMetadata } from './createInstanceMetadata';
 import { Image } from './';
 import { Secret } from './createInstanceMetadata';
@@ -16,12 +15,6 @@ type CreateInstanceTemplateParams = {
 export const createInstanceTemplate = (
   params: CreateInstanceTemplateParams,
 ) => {
-  new gcp.projects.IAMMember(`${params.resourcePrefix}-iam-binding`, {
-    role: 'roles/storage.objectViewer',
-    member: pulumi.interpolate`serviceAccount:${params.serviceAccount.email}`,
-    project: params.image.project,
-  });
-
   const instanceTemplate = new gcp.compute.InstanceTemplate(
     `${params.resourcePrefix}-instance-template`,
     {

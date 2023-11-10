@@ -19,7 +19,7 @@ export const createInstanceMetadata = (
       spec: {
         containers: [
           {
-            name: params.image.name,
+            name: params.image.url,
             image: params.image.url,
             stdin: false,
             tty: false,

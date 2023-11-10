@@ -11,9 +11,15 @@ import { createDockerImage } from './createDockerImage';
 import { Secret } from './createInstanceMetadata';
 
 export type Image = {
-  name: string;
   url: string;
-  project: string;
+};
+
+export type Instance = {
+  baseName: string;
+  roles: {
+    role: string;
+    project: string;
+  }[];
 };
 
 type CreatePublicGceServiceParams = {
@@ -22,10 +28,9 @@ type CreatePublicGceServiceParams = {
   containerPort: number;
   startTimeSec: number;
   numberOfInstances: number;
-  project: string;
   healthCheck: gcp.compute.HealthCheckArgs;
   secret: Secret;
-  baseInstanceName: string;
+  instance: Instance;
 };
 
 export const createPublicGceService = (
@@ -46,6 +51,7 @@ export const createPublicGceService = (
 
   const serviceAccount = createInstanceServiceAccount({
     resourcePrefix: params.resourcePrefix,
+    roles: params.instance.roles,
   });
 
   const instanceTemplate = createInstanceTemplate({
@@ -61,7 +67,7 @@ export const createPublicGceService = (
     resourcePrefix: params.resourcePrefix,
     healthCheck: params.healthCheck,
     instanceTemplate: instanceTemplate,
-    baseInstanceName: params.baseInstanceName,
+    baseInstanceName: params.instance.baseName,
     containerPort: params.containerPort,
     numberOfInstances: params.numberOfInstances,
     startTimeSec: params.startTimeSec,
