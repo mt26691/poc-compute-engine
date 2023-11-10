@@ -43,13 +43,12 @@ export const createPublicGceService = (
 
   const serviceAccount = createInstanceServiceAccount({
     resourcePrefix: params.resourcePrefix,
-    project: params.project,
-    image: params.image,
   });
 
   return;
 
   const instanceTemplate = createInstanceTemplate({
+    resourcePrefix: params.resourcePrefix,
     network,
     subnetwork,
     serviceAccount,

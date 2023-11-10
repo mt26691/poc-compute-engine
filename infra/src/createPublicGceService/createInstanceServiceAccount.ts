@@ -1,11 +1,7 @@
 import * as gcp from '@pulumi/gcp';
-import * as pulumi from '@pulumi/pulumi';
-import { Image } from './';
 
 type CreateInstanceServiceAccountParams = {
   resourcePrefix: string;
-  project: string;
-  image: Image;
 };
 
 export const createInstanceServiceAccount = (
@@ -18,12 +14,6 @@ export const createInstanceServiceAccount = (
       displayName: params.resourcePrefix,
     },
   );
-
-  new gcp.projects.IAMBinding(`${params.resourcePrefix}-iam-binding`, {
-    role: 'roles/storage.objectViewer',
-    members: [pulumi.interpolate`serviceAccount:${serviceAccount.email}`],
-    project: params.image.project,
-  });
 
   return serviceAccount;
 };
