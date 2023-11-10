@@ -49,7 +49,6 @@ export const main = (params: CreatePublicGceServiceParams) => {
     image: params.image,
   });
 
-  // wms
   const serviceAccount = createInstanceServiceAccount({
     project: params.project,
     image: params.image,
