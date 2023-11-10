@@ -8,6 +8,7 @@ import { createSslCertificate } from './createSslCertificate';
 import { createInstanceGroupManager } from './createInstanceGroupManager';
 import { createInstanceTemplate } from './createInstanceTemplate';
 import { createDockerImage } from './createDockerImage';
+import { Secret } from './createInstanceMetadata';
 
 export type Image = {
   name: string;
@@ -23,6 +24,7 @@ type CreatePublicGceServiceParams = {
   numberOfInstances: number;
   project: string;
   healthCheck: gcp.compute.HealthCheckArgs;
+  secret: Secret;
 };
 
 export const createPublicGceService = (
@@ -45,15 +47,16 @@ export const createPublicGceService = (
     resourcePrefix: params.resourcePrefix,
   });
 
-  return;
-
   const instanceTemplate = createInstanceTemplate({
     resourcePrefix: params.resourcePrefix,
     network,
     subnetwork,
     serviceAccount,
     image: params.image,
+    secret: params.secret,
   });
+
+  return;
 
   const instanceGroupManager = createInstanceGroupManager({
     healthCheck: params.healthCheck,

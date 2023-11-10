@@ -1,8 +1,14 @@
 import * as yaml from 'yaml';
 import { Image } from './';
 
+export type Secret = {
+  project: string;
+  name: string;
+};
+
 type CreateInstanceMetadataParams = {
   image: Image;
+  secret: Secret;
 };
 
 export const createInstanceMetadata = (

@@ -17,4 +17,8 @@ createPublicGceService({
       requestPath: '/healthz',
     },
   },
+  secret: {
+    project: 'chi-dau',
+    name: 'poc-compute-engine',
+  },
 });
