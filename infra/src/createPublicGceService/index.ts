@@ -8,7 +8,11 @@ import { createSslCertificate } from './createSslCertificate';
 import { createInstanceGroupManager } from './createInstanceGroupManager';
 import { createInstanceTemplate } from './createInstanceTemplate';
 import { createDockerImage } from './createDockerImage';
-import { Secret } from './createInstanceMetadata';
+
+export type Secret = {
+  project: string;
+  name: string;
+};
 
 export type Image = {
   url: string;
@@ -73,12 +77,13 @@ export const createPublicGceService = (
     startTimeSec: params.startTimeSec,
   });
 
-  return;
-
   const backend = createBackend({
+    resourcePrefix: params.resourcePrefix,
     healthCheck: params.healthCheck,
     instanceGroupManager,
   });
+
+  return;
 
   const sslCertificate = createSslCertificate();
 

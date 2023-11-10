@@ -1,10 +1,5 @@
 import * as yaml from 'yaml';
-import { Image } from './';
-
-export type Secret = {
-  project: string;
-  name: string;
-};
+import { Image, Secret } from './';
 
 type CreateInstanceMetadataParams = {
   image: Image;
