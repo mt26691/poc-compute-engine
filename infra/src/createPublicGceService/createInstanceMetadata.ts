@@ -55,7 +55,7 @@ export const createInstanceMetadata = (
       #!/bin/bash
       ACCESS_TOKEN=$(curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token --header "Metadata-Flavor: Google" | jq -r '.access_token')
 
-      curl "https://secretmanager.googleapis.com/v1/projects/$PROJECT_ID/secrets/$SECRET_NAME/versions/latest:access" \
+      curl "https://secretmanager.googleapis.com/v1/projects/${params.secret.project}/secrets/${params.secret.name}/versions/latest:access" \
         --request "GET" \
         --header "Authorization: Bearer $ACCESS_TOKEN" \
         --header "content-type: application/json" \

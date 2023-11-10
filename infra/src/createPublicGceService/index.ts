@@ -25,6 +25,7 @@ type CreatePublicGceServiceParams = {
   project: string;
   healthCheck: gcp.compute.HealthCheckArgs;
   secret: Secret;
+  baseInstanceName: string;
 };
 
 export const createPublicGceService = (
@@ -56,16 +57,17 @@ export const createPublicGceService = (
     secret: params.secret,
   });
 
-  return;
-
   const instanceGroupManager = createInstanceGroupManager({
+    resourcePrefix: params.resourcePrefix,
     healthCheck: params.healthCheck,
     instanceTemplate: instanceTemplate,
-    baseInstanceName: 'compute-engine-app',
+    baseInstanceName: params.baseInstanceName,
     containerPort: params.containerPort,
     numberOfInstances: params.numberOfInstances,
     startTimeSec: params.startTimeSec,
   });
+
+  return;
 
   const backend = createBackend({
     healthCheck: params.healthCheck,

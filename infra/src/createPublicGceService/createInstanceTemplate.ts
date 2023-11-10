@@ -23,7 +23,7 @@ export const createInstanceTemplate = (
   });
 
   const instanceTemplate = new gcp.compute.InstanceTemplate(
-    'instance-template',
+    `${params.resourcePrefix}-instance-template`,
     {
       machineType: 'e2-standard-2',
       metadata: createInstanceMetadata({

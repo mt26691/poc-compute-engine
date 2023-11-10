@@ -21,4 +21,5 @@ createPublicGceService({
     project: 'chi-dau',
     name: 'poc-compute-engine',
   },
+  baseInstanceName: 'poc-compute-engine',
 });

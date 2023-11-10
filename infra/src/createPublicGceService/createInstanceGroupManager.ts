@@ -1,6 +1,7 @@
 import * as gcp from '@pulumi/gcp';
 
 type CreateInstanceGroupManagerParams = {
+  resourcePrefix: string;
   healthCheck: gcp.compute.HealthCheckArgs;
   instanceTemplate: gcp.compute.InstanceTemplate;
   baseInstanceName: string;
@@ -13,13 +14,12 @@ export const createInstanceGroupManager = (
   params: CreateInstanceGroupManagerParams,
 ) => {
   const healthCheck = new gcp.compute.HealthCheck(
-    'igm-health-check',
+    `${params.resourcePrefix}-igm-health-check`,
     params.healthCheck,
   );
 
-  // instance group manager
   const instanceGroupManager = new gcp.compute.RegionInstanceGroupManager(
-    'group',
+    `${params.resourcePrefix}-igm`,
     {
       region: 'us-central1',
       versions: [
