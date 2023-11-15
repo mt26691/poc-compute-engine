@@ -1,12 +1,18 @@
 import * as gcp from '@pulumi/gcp';
 
-export const createSslCertificate = () => {
+type CreateSslCertificateParams = {
+  resourcePrefix: string;
+  domain: string;
+  managedZone: string;
+};
+
+export const createSslCertificate = (params: CreateSslCertificateParams) => {
   const sslCertificate = new gcp.compute.ManagedSslCertificate(
-    'managed-ssl-certificate',
+    `${params.resourcePrefix}-managed-ssl-certificate`,
     {
-      name: 'linhvuvan-com',
+      name: params.managedZone,
       managed: {
-        domains: ['linhvuvan.com'],
+        domains: [params.domain],
       },
     },
   );

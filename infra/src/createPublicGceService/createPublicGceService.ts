@@ -35,6 +35,8 @@ type CreatePublicGceServiceParams = {
   healthCheck: gcp.compute.HealthCheckArgs;
   secret: Secret;
   instance: Instance;
+  domain: string;
+  managedZone: string;
 };
 
 export const createPublicGceService = (
@@ -83,11 +85,16 @@ export const createPublicGceService = (
     instanceGroupManager,
   });
 
-  return;
-
-  const sslCertificate = createSslCertificate();
+  const sslCertificate = createSslCertificate({
+    resourcePrefix: params.resourcePrefix,
+    domain: params.domain,
+    managedZone: params.managedZone,
+  });
 
   createApplicationLoadBalancer({
+    resourcePrefix: params.resourcePrefix,
+    domain: params.domain,
+    managedZone: params.managedZone,
     backend,
     sslCertificate,
   });
