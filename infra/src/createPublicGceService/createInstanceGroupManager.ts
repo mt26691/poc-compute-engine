@@ -46,6 +46,8 @@ export const createInstanceGroupManager = (
         maxUnavailableFixed: 0,
       },
       targetSize: params.numberOfInstances,
+      waitForInstances: true,
+      waitForInstancesStatus: 'STABLE',
     },
   );
 
