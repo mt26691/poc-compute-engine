@@ -1,6 +1,6 @@
 import * as gcp from '@pulumi/gcp';
 import * as pulumi from '@pulumi/pulumi';
-import { Instance } from '.';
+import { Instance } from './createPublicGceService';
 
 type CreateInstanceServiceAccountParams = {
   resourcePrefix: string;
