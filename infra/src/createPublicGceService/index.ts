@@ -1,9 +1,11 @@
 import { createPublicGceService } from './createPublicGceService';
 
+const imageUrl = 'gcr.io/tat-den/poc-compute-engine:33';
+
 createPublicGceService({
   resourcePrefix: 'poc-compute-engine',
   image: {
-    url: 'gcr.io/tat-den/poc-compute-engine:33',
+    url: imageUrl,
   },
   containerPort: 3000,
   initialStartupDelaySec: 10,
@@ -14,6 +16,12 @@ createPublicGceService({
       requestPath: '/healthz',
     },
   },
+  env: [
+    {
+      name: 'imageUrl',
+      value: imageUrl,
+    },
+  ],
   secret: {
     project: 'chi-dau',
     name: 'poc-compute-engine',

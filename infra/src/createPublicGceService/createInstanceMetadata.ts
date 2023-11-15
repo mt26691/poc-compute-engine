@@ -1,10 +1,11 @@
 import * as yaml from 'yaml';
-import { Image, Secret } from './createPublicGceService';
+import { Env, Image, Secret } from './createPublicGceService';
 
 type CreateInstanceMetadataParams = {
   resourcePrefix: string;
   image: Image;
   secret: Secret;
+  env: Env[];
 };
 
 export const createInstanceMetadata = (
@@ -19,12 +20,7 @@ export const createInstanceMetadata = (
             image: params.image.url,
             stdin: false,
             tty: false,
-            env: [
-              {
-                name: 'DB_USER',
-                value: 'root',
-              },
-            ],
+            env: params.env,
             volumeMounts: [
               {
                 name: 'env',

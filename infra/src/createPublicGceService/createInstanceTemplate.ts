@@ -1,6 +1,6 @@
 import * as gcp from '@pulumi/gcp';
 import { createInstanceMetadata } from './createInstanceMetadata';
-import { Image, Secret } from './createPublicGceService';
+import { Env, Image, Secret } from './createPublicGceService';
 
 type CreateInstanceTemplateParams = {
   resourcePrefix: string;
@@ -9,6 +9,7 @@ type CreateInstanceTemplateParams = {
   serviceAccount: gcp.serviceaccount.Account;
   image: Image;
   secret: Secret;
+  env: Env[];
 };
 
 export const createInstanceTemplate = (
@@ -22,6 +23,7 @@ export const createInstanceTemplate = (
         resourcePrefix: params.resourcePrefix,
         image: params.image,
         secret: params.secret,
+        env: params.env,
       }),
       disks: [
         {

@@ -18,6 +18,11 @@ export type Image = {
   url: string;
 };
 
+export type Env = {
+  name: string;
+  value: string;
+};
+
 export type Instance = {
   baseName: string;
   roles: {
@@ -37,6 +42,7 @@ type CreatePublicGceServiceParams = {
   instance: Instance;
   domain: string;
   managedZone: string;
+  env: Env[];
 };
 
 export const createPublicGceService = (
@@ -67,6 +73,7 @@ export const createPublicGceService = (
     serviceAccount,
     image: params.image,
     secret: params.secret,
+    env: params.env,
   });
 
   const instanceGroupManager = createInstanceGroupManager({

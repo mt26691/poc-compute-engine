@@ -4,8 +4,7 @@ import logger from 'pino-http';
 import axios from 'axios';
 
 const app = express();
-const PORT = 3000;
-const REVISION = 33;
+const PORT = process.env.PORT || 3000;
 
 app.use(logger());
 
@@ -13,14 +12,14 @@ app.get('/', async (req, res) => {
   const result = await axios.get('https://api.ipify.org');
 
   return res.status(200).json({
-    revision: REVISION,
+    revision: process.env.REVISION,
     ip: result.data,
   });
 });
 
 app.get('/healthz', (req, res) => {
   return res.status(200).json({
-    revision: REVISION,
+    revision: process.env.REVISION,
   });
 });
 
