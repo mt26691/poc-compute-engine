@@ -7,7 +7,7 @@ type CreateInstanceGroupManagerParams = {
   baseInstanceName: string;
   containerPort: number;
   numberOfInstances: number;
-  startTimeSec: number;
+  initialStartupDelaySec: number;
 };
 
 export const createInstanceGroupManager = (
@@ -36,12 +36,12 @@ export const createInstanceGroupManager = (
       ],
       autoHealingPolicies: {
         healthCheck: healthCheck.id,
-        initialDelaySec: params.startTimeSec,
+        initialDelaySec: params.initialStartupDelaySec,
       },
       updatePolicy: {
         type: 'PROACTIVE',
         minimalAction: 'REPLACE',
-        minReadySec: params.startTimeSec,
+        minReadySec: params.initialStartupDelaySec,
         maxSurgeFixed: Math.max(params.numberOfInstances, 4),
         maxUnavailableFixed: 0,
       },

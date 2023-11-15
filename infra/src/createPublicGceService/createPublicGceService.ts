@@ -30,7 +30,7 @@ type CreatePublicGceServiceParams = {
   resourcePrefix: string;
   image: Image;
   containerPort: number;
-  startTimeSec: number;
+  initialStartupDelaySec: number;
   numberOfInstances: number;
   healthCheck: gcp.compute.HealthCheckArgs;
   secret: Secret;
@@ -74,7 +74,7 @@ export const createPublicGceService = (
     baseInstanceName: params.instance.baseName,
     containerPort: params.containerPort,
     numberOfInstances: params.numberOfInstances,
-    startTimeSec: params.startTimeSec,
+    initialStartupDelaySec: params.initialStartupDelaySec,
   });
 
   const backend = createBackend({

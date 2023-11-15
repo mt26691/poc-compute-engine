@@ -46,7 +46,6 @@ export const createInstanceMetadata = (
       },
     }),
     'google-logging-enabled': 'true',
-    'google-logging-use-fluentbit': 'true',
     'startup-script': `
       #!/bin/bash
       ACCESS_TOKEN=$(curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token --header "Metadata-Flavor: Google" | jq -r '.access_token')

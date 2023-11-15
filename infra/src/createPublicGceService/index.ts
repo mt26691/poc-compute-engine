@@ -6,7 +6,7 @@ createPublicGceService({
     url: 'gcr.io/tat-den/poc-compute-engine:33',
   },
   containerPort: 3000,
-  startTimeSec: 10,
+  initialStartupDelaySec: 10,
   numberOfInstances: 1,
   healthCheck: {
     httpHealthCheck: {
@@ -23,6 +23,10 @@ createPublicGceService({
     roles: [
       {
         role: 'roles/secretmanager.secretAccessor',
+        project: 'chi-dau',
+      },
+      {
+        role: 'roles/logging.logWriter',
         project: 'chi-dau',
       },
       {

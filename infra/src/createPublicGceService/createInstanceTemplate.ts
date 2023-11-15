@@ -24,7 +24,9 @@ export const createInstanceTemplate = (
         secret: params.secret,
       }),
       disks: [
-        { sourceImage: 'projects/cos-cloud/global/images/family/cos-stable' },
+        {
+          sourceImage: 'projects/cos-cloud/global/images/family/cos-109-lts',
+        },
       ],
       networkInterfaces: [
         {
