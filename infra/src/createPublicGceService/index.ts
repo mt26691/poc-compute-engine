@@ -18,7 +18,7 @@ createPublicGceService({
   },
   env: [
     {
-      name: 'imageUrl',
+      name: 'REVISION',
       value: imageUrl,
     },
   ],
@@ -43,6 +43,6 @@ createPublicGceService({
       },
     ],
   },
-  domain: 'linhvuvan.com',
+  domain: 'linhvuvan.com.',
   managedZone: 'linhvuvan-com',
 });
