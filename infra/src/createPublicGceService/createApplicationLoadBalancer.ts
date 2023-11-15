@@ -65,7 +65,7 @@ export const createApplicationLoadBalancer = (
   // dns
   new gcp.dns.RecordSet(`${params.resourcePrefix}-record-set`, {
     managedZone: params.managedZone,
-    name: params.domain,
+    name: `${params.domain}.`,
     type: 'A',
     rrdatas: [ipAddress],
     ttl: 300,

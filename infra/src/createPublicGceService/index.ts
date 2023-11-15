@@ -43,6 +43,6 @@ createPublicGceService({
       },
     ],
   },
-  domain: 'linhvuvan.com.',
+  domain: 'linhvuvan.com',
   managedZone: 'linhvuvan-com',
 });
