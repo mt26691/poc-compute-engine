@@ -1,6 +1,6 @@
 {
   "name": "poc-compute-engine",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "deploy": "pulumi up -y -s dev",
     "destroy": "pulumi destroy -y -s dev"

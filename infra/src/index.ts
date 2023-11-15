@@ -1,4 +1,4 @@
-import { createPublicGceService } from './src/createPublicGceService';
+import { createPublicGceService } from './createPublicGceService';
 
 createPublicGceService({
   resourcePrefix: 'poc-compute-engine',
