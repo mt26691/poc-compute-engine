@@ -1,6 +1,6 @@
 import { createPublicGceService } from './createPublicGceService';
 
-const imageUrl = 'gcr.io/tat-den/poc-compute-engine:1';
+const imageUrl = 'gcr.io/tat-den/poc-compute-engine:15';
 
 createPublicGceService({
   resourcePrefix: 'poc-compute-engine',
@@ -45,4 +45,6 @@ createPublicGceService({
   },
   domain: 'linhvuvan.com',
   managedZone: 'linhvuvan-com',
+  project: 'chi-dau',
+  region: 'us-central1',
 });

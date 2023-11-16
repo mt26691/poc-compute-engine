@@ -43,6 +43,8 @@ type CreatePublicGceServiceParams = {
   domain: string;
   managedZone: string;
   env: Env[];
+  project: string;
+  region: string;
 };
 
 export const createPublicGceService = (
@@ -84,6 +86,8 @@ export const createPublicGceService = (
     containerPort: params.containerPort,
     numberOfInstances: params.numberOfInstances,
     initialStartupDelaySec: params.initialStartupDelaySec,
+    project: params.project,
+    region: params.region,
   });
 
   const backend = createBackend({

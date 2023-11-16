@@ -1,4 +1,5 @@
 import * as gcp from '@pulumi/gcp';
+import { Wait } from './Wait';
 
 type CreateInstanceGroupManagerParams = {
   resourcePrefix: string;
@@ -8,6 +9,8 @@ type CreateInstanceGroupManagerParams = {
   containerPort: number;
   numberOfInstances: number;
   initialStartupDelaySec: number;
+  project: string;
+  region: string;
 };
 
 export const createInstanceGroupManager = (
@@ -46,10 +49,16 @@ export const createInstanceGroupManager = (
         maxUnavailableFixed: 0,
       },
       targetSize: params.numberOfInstances,
-      waitForInstances: true,
-      waitForInstancesStatus: 'STABLE',
     },
   );
+
+  new Wait(`${params.resourcePrefix}-wait`, {
+    instanceTemplate: params.instanceTemplate,
+    numberOfInstances: params.numberOfInstances,
+    instanceGroupManager,
+    region: params.region,
+    project: params.project,
+  });
 
   return instanceGroupManager;
 };
