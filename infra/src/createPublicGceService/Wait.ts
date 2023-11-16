@@ -21,8 +21,6 @@ async function checkAreAllInstancesHealthy(
       instanceGroupManager: props.instanceGroupManager.split('/').pop(),
     });
 
-    console.log(props.instanceTemplate, instances);
-
     const newIntances = instances.filter((instances) => {
       return instances.version?.instanceTemplate?.includes(
         props.instanceTemplate,
@@ -46,7 +44,11 @@ export class Wait extends pulumi.dynamic.Resource {
   constructor(name: string, props: any, opts?: pulumi.CustomResourceOptions) {
     super(
       {
-        create: async () => ({ id: name }),
+        create: async (inputs) => {
+          await checkAreAllInstancesHealthy(inputs);
+
+          return { id: name };
+        },
         update: async (id, olds, news) => {
           await checkAreAllInstancesHealthy(news);
 
