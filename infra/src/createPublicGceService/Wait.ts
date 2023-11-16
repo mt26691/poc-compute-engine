@@ -13,8 +13,9 @@ async function checkAreAllInstancesHealthy(
   props: CheckAreAllInstancesHealthyProps,
 ) {
   const client = new compute.RegionInstanceGroupManagersClient();
+  let isHealthy = false;
 
-  while (true) {
+  while (!isHealthy) {
     const [instances] = await client.listManagedInstances({
       project: props.project,
       region: props.region,
@@ -27,16 +28,16 @@ async function checkAreAllInstancesHealthy(
       );
     });
 
-    const isHealthy =
+    isHealthy =
       newIntances.every(
         (instance) =>
           instance.instanceStatus === 'RUNNING' &&
           instance.currentAction === 'NONE',
       ) && newIntances.length === props.numberOfInstances;
 
-    if (isHealthy) break;
-
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    if (!isHealthy) {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+    }
   }
 }
 
