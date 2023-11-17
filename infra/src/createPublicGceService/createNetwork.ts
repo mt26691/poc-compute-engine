@@ -16,6 +16,9 @@ export const createNetwork = (params: CreateNetworkParams) => {
         protocol: 'tcp',
         ports: ['22', '80', '3000'],
       },
+      {
+        protocol: 'icmp',
+      },
     ],
     direction: 'INGRESS',
     sourceRanges: ['0.0.0.0/0'],
