@@ -8,6 +8,7 @@ import { createSslCertificate } from './createSslCertificate';
 import { createInstanceGroupManager } from './createInstanceGroupManager';
 import { createInstanceTemplate } from './createInstanceTemplate';
 import { createDockerImage } from './createDockerImage';
+import { createInstanceGroupInspector } from './createInstanceGroupInspector';
 
 export type Secret = {
   project: string;
@@ -86,8 +87,16 @@ export const createPublicGceService = (
     containerPort: params.containerPort,
     numberOfInstances: params.numberOfInstances,
     initialStartupDelaySec: params.initialStartupDelaySec,
-    project: params.project,
     region: params.region,
+  });
+
+  createInstanceGroupInspector({
+    resourcePrefix: params.resourcePrefix,
+    region: params.region,
+    project: params.project,
+    numberOfInstances: params.numberOfInstances,
+    instanceTemplate: instanceTemplate,
+    instanceGroupManager: instanceGroupManager,
   });
 
   const backend = createBackend({
