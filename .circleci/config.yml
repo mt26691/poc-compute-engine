@@ -21,10 +21,10 @@ jobs:
           version: 20.10.14
       - pulumi/login:
           version: 3.89.0
-      # - run:
-      #     name: Authenticate with GCP
-      #     command: |
-      #       echo $RANDOM_STRING | docker login -u _json_key --password-stdin https://gcr.io
+      - run:
+          name: Authenticate with GCP
+          command: |
+            echo $RANDOM_STRING | docker login -u _json_key --password-stdin https://gcr.io
       - run:
           name: Save GCP credentials
           command: |
