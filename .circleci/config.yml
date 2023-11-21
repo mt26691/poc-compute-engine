@@ -2,10 +2,15 @@
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
+orbs:
+  gcp-gcr: circleci/gcp-gcr@0.13.0
+  pulumi: pulumi/pulumi@2.0.0
+  gcp-cli: circleci/gcp-cli@2.2.0
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  say-hello:
+  deploy:
     # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
@@ -22,10 +27,11 @@ jobs:
           name: 'Install npm dependencies in the app directory'
           command: npm ci
           working_directory: ./app
+      - pulumi/login
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
   say-hello-workflow:
     jobs:
-      - say-hello
+      - deploy
