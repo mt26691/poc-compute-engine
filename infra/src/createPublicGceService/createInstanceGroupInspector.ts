@@ -50,7 +50,7 @@ async function checkAreAllInstancesHealthy(
       isHealthy,
       instances,
       newInstances,
-      props,
+      instanceTemplate: props.instanceTemplate,
     });
 
     if (!isHealthy) {

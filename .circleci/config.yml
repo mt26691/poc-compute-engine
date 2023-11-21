@@ -13,6 +13,8 @@ jobs:
     # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
       - image: cimg/node:16.20
+    environment:
+      MY_NAME: linhvuvan2022
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
@@ -47,6 +49,7 @@ jobs:
           name: Deploy pulumi changes
           command: |
             cat ~/gcloud-service-key.json
+            echo $MY_NAME
             pulumi up -s linhvuvan2022/poc-compute-engine/dev -y
           working_directory: ./infra
 
