@@ -46,6 +46,13 @@ async function checkAreAllInstancesHealthy(
           instance.currentAction === 'NONE',
       ) && newInstances.length === props.numberOfInstances;
 
+    console.log({
+      isHealthy,
+      instances,
+      newInstances,
+      props,
+    });
+
     if (!isHealthy) {
       await waitSec(10);
     }
