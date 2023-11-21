@@ -14,6 +14,7 @@ app.get('/', async (req, res) => {
   return res.status(200).json({
     revision: process.env.REVISION,
     ip: result.data,
+    code: 'ok',
   });
 });
 
