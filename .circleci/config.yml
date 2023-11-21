@@ -3,9 +3,7 @@
 version: 2.1
 
 orbs:
-  gcp-gcr: circleci/gcp-gcr@0.13.0
   pulumi: pulumi/pulumi@2.0.0
-  gcp-cli: circleci/gcp-cli@2.2.0
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
@@ -21,6 +19,8 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 20.10.14
+      - pulumi/login:
+          version: 3.89.0
       - run:
           name: Authenticate with GCP
           command: |
@@ -33,8 +33,6 @@ jobs:
           name: Install npm dependencies in the app directory
           command: npm ci
           working_directory: ./app
-      - pulumi/login:
-          version: 3.89.0
       - run:
           name: Preview pulumi changes
           command: pulumi preview -s linhvuvan2022/poc-compute-engine/dev
