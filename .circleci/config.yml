@@ -63,5 +63,5 @@ jobs:
 workflows:
   say-hello-workflow:
     jobs:
-      - deploy
+      - deploy:
           my_name: Linh
