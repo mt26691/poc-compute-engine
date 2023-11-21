@@ -29,6 +29,9 @@ jobs:
           working_directory: ./app
       - pulumi/login:
           version: 3.89.0
+      - run:
+          name: 'Preview pulumi changes'
+          command: pulumi preview -s dev
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
