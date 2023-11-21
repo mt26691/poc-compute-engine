@@ -25,10 +25,11 @@ type CheckAreAllInstancesHealthyProps = InstanceGroupInspectorProps & {
 async function checkAreAllInstancesHealthy(
   props: CheckAreAllInstancesHealthyProps,
 ): Promise<void> {
-  const client = new compute.RegionInstanceGroupManagersClient();
-  let isHealthy = false;
+  console.log('Waiting for instances to be healthy...');
 
-  while (!isHealthy) {
+  try {
+    const client = new compute.RegionInstanceGroupManagersClient();
+
     const [instances] = await client.listManagedInstances({
       project: props.project,
       region: props.region,
@@ -39,7 +40,7 @@ async function checkAreAllInstancesHealthy(
       instance.version?.instanceTemplate?.includes(props.instanceTemplate),
     );
 
-    isHealthy =
+    const isHealthy =
       newInstances.every(
         (instance) =>
           instance.instanceStatus === 'RUNNING' &&
@@ -52,10 +53,8 @@ async function checkAreAllInstancesHealthy(
       newInstances,
       props,
     });
-
-    if (!isHealthy) {
-      await waitSec(10);
-    }
+  } catch (err) {
+    console.error(err);
   }
 }
 
