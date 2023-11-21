@@ -22,12 +22,6 @@ jobs:
       - pulumi/login:
           version: 3.89.0
       - run:
-          name: Save GCP service account key
-          command: |
-            echo ${GOOGLE_CREDENTIALS} > ~/gcloud-service-key.json
-            cat ~/gcloud-service-key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
-      - run:
           name: Authenticate with GCP
           command: |
             echo $GOOGLE_CREDENTIALS | docker login -u _json_key --password-stdin https://gcr.io
@@ -45,7 +39,11 @@ jobs:
           working_directory: ./infra
       - run:
           name: Deploy pulumi changes
-          command: pulumi up -s linhvuvan2022/poc-compute-engine/dev -y
+          command: |
+            echo ${GOOGLE_CREDENTIALS} > ~/gcloud-service-key.json
+            cat ~/gcloud-service-key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
+            pulumi up -s linhvuvan2022/poc-compute-engine/dev -y
           working_directory: ./infra
 
 # Orchestrate jobs using workflows
