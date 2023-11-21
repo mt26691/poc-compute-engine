@@ -83,11 +83,11 @@ class InstanceGroupInspector extends pulumi.dynamic.Resource {
 export const createInstanceGroupInspector = (
   params: CreateInstanceGroupInspectorParams,
 ) => {
-  // new InstanceGroupInspector(`${params.resourcePrefix}-inspector`, {
-  //   instanceTemplate: params.instanceTemplate,
-  //   numberOfInstances: params.numberOfInstances,
-  //   instanceGroupManager: params.instanceGroupManager,
-  //   region: params.region,
-  //   project: params.project,
-  // });
+  new InstanceGroupInspector(`${params.resourcePrefix}-inspector`, {
+    instanceTemplate: params.instanceTemplate,
+    numberOfInstances: params.numberOfInstances,
+    instanceGroupManager: params.instanceGroupManager,
+    region: params.region,
+    project: params.project,
+  });
 };
