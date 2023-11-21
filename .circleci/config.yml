@@ -31,7 +31,7 @@ jobs:
           version: 3.89.0
       - run:
           name: 'Preview pulumi changes'
-          command: pulumi preview -s dev
+          command: pulumi preview -s linhvuvan2022/poc-compute-engine/dev
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
