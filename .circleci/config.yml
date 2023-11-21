@@ -15,8 +15,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: 'Install npm dependencies in the infra directory'
+          command: npm ci
+          working_directory: ./infra
+      - run:
+          name: 'Install npm dependencies in the app directory'
+          command: npm ci
+          working_directory: ./app
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
