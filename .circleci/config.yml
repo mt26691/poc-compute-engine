@@ -13,8 +13,12 @@ jobs:
     # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
       - image: cimg/node:16.20
+    parameters:
+      my_name:
+        type: string
     environment:
-      MY_NAME: linhvuvan2022
+      MY_NAME: << parameters.my_name >>
+      MY_ACCOUNT: linhvuvan2022
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
@@ -50,6 +54,7 @@ jobs:
           command: |
             cat ~/gcloud-service-key.json
             echo $MY_NAME
+            echo $MY_ACCOUNT
             pulumi up -s linhvuvan2022/poc-compute-engine/dev -y
           working_directory: ./infra
 
@@ -59,3 +64,4 @@ workflows:
   say-hello-workflow:
     jobs:
       - deploy
+          my_name: Linh
