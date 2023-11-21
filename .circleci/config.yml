@@ -19,6 +19,8 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 20.10.14
+      - pulumi/login:
+          version: 3.89.0
       - run:
           name: Authenticate with GCP
           command: |
@@ -31,8 +33,6 @@ jobs:
           name: Install npm dependencies in the app directory
           command: npm ci
           working_directory: ./app
-      - pulumi/login:
-          version: 3.89.0
       - run:
           name: Preview pulumi changes
           command: pulumi preview -s linhvuvan2022/poc-compute-engine/dev
