@@ -15,14 +15,18 @@ jobs:
       - image: cimg/node:16.20
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
-    environment:
-      GOOGLE_APPLICATION_CREDENTIALS: $GOOGLE_CREDENTIALS
     steps:
       - checkout
       - setup_remote_docker:
           version: 20.10.14
       - pulumi/login:
           version: 3.89.0
+      - run:
+          name: Save GCP service account key
+          command: |
+            echo ${GOOGLE_CREDENTIALS} > ~/gcloud-service-key.json
+            cat ~/gcloud-service-key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
       - run:
           name: Authenticate with GCP
           command: |
