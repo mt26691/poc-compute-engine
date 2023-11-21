@@ -22,6 +22,10 @@ jobs:
       - setup_remote_docker:
           version: 20.10.14
       - run:
+          name: 'Authenticate with GCP'
+          command: |
+            echo $GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+      - run:
           name: 'Install npm dependencies in the infra directory'
           command: npm ci
           working_directory: ./infra
