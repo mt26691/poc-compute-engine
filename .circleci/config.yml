@@ -46,6 +46,7 @@ jobs:
       - run:
           name: Deploy pulumi changes
           command: |
+            cat ~/gcloud-service-key.json
             pulumi up -s linhvuvan2022/poc-compute-engine/dev -y
           working_directory: ./infra
 
