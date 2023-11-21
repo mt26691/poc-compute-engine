@@ -8,7 +8,7 @@ createPublicGceService({
     url: imageUrl,
   },
   containerPort: 3000,
-  initialStartupDelaySec: 10,
+  initialStartupDelaySec: 30,
   numberOfInstances: 1,
   healthCheck: {
     httpHealthCheck: {
