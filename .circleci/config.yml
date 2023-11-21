@@ -26,6 +26,12 @@ jobs:
           command: |
             echo $GOOGLE_CREDENTIALS | docker login -u _json_key --password-stdin https://gcr.io
       - run:
+          name: Save GCP credentials
+          command: |
+            echo ${GOOGLE_CREDENTIALS} > ~/gcloud-service-key.json
+            cat ~/gcloud-service-key.json
+            echo "export GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json" >> $BASH_ENV
+      - run:
           name: Install npm dependencies in the infra directory
           command: npm ci
           working_directory: ./infra
@@ -40,9 +46,6 @@ jobs:
       - run:
           name: Deploy pulumi changes
           command: |
-            echo ${GOOGLE_CREDENTIALS} > ~/gcloud-service-key.json
-            cat ~/gcloud-service-key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
             pulumi up -s linhvuvan2022/poc-compute-engine/dev -y
           working_directory: ./infra
 
