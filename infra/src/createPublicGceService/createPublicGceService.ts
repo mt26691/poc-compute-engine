@@ -32,13 +32,19 @@ export type Instance = {
   }[];
 };
 
+export type HealthCheck = gcp.compute.HealthCheckArgs & {
+  checkIntervalSec: number;
+  healthyThreshold: number;
+  unhealthyThreshold: number;
+};
+
 type CreatePublicGceServiceParams = {
   resourcePrefix: string;
   image: Image;
   containerPort: number;
   initialStartupDelaySec: number;
   numberOfInstances: number;
-  healthCheck: gcp.compute.HealthCheckArgs;
+  healthCheck: HealthCheck;
   secret: Secret;
   instance: Instance;
   domain: string;
@@ -97,6 +103,8 @@ export const createPublicGceService = (
     numberOfInstances: params.numberOfInstances,
     instanceTemplate: instanceTemplate,
     instanceGroupManager: instanceGroupManager,
+    healthCheck: params.healthCheck,
+    initialStartupDelaySec: params.initialStartupDelaySec,
   });
 
   const backend = createBackend({

@@ -2,12 +2,15 @@ import compute from '@google-cloud/compute';
 import * as pulumi from '@pulumi/pulumi';
 import * as gcp from '@pulumi/gcp';
 import { waitSec } from '../utils/wait';
+import { HealthCheck } from './createPublicGceService';
 
 type CreateInstanceGroupInspectorParams = {
   resourcePrefix: string;
   region: string;
   project: string;
   numberOfInstances: number;
+  initialStartupDelaySec: number;
+  healthCheck: HealthCheck;
   instanceTemplate: gcp.compute.InstanceTemplate;
   instanceGroupManager: gcp.compute.RegionInstanceGroupManager;
 };
@@ -27,8 +30,21 @@ async function checkAreAllInstancesHealthy(
 ): Promise<void> {
   const client = new compute.RegionInstanceGroupManagersClient();
   let isHealthy = false;
+  let attempts = 0;
+  const maxAttempts =
+    Math.ceil(
+      props.initialStartupDelaySec / props.healthCheck.checkIntervalSec,
+    ) + props.healthCheck.unhealthyThreshold;
+
+  throw new Error('test');
 
   while (!isHealthy) {
+    if (attempts > maxAttempts) {
+      throw new Error(
+        `Instance group manager ${props.instanceGroupManager} is not healthy after ${maxAttempts} attempts`,
+      );
+    }
+
     const [instances] = await client.listManagedInstances({
       project: props.project,
       region: props.region,
@@ -46,15 +62,16 @@ async function checkAreAllInstancesHealthy(
           instance.currentAction === 'NONE',
       ) && newInstances.length === props.numberOfInstances;
 
-    console.log({
+    console.log(`Attempts number ${attempts}`, {
       isHealthy,
+      instanceTemplate: props.instanceTemplate,
       instances,
       newInstances,
-      instanceTemplate: props.instanceTemplate,
     });
 
     if (!isHealthy) {
-      await waitSec(10);
+      attempts += 1;
+      await waitSec(props.healthCheck.checkIntervalSec);
     }
   }
 }
@@ -70,7 +87,7 @@ class InstanceGroupInspector extends pulumi.dynamic.Resource {
         create: async (inputs) => {
           await checkAreAllInstancesHealthy(inputs);
 
-          return { id: name };
+          return { id: name, failures: [] };
         },
         update: async (id, olds, news) => {
           await checkAreAllInstancesHealthy(news);
@@ -90,11 +107,8 @@ class InstanceGroupInspector extends pulumi.dynamic.Resource {
 export const createInstanceGroupInspector = (
   params: CreateInstanceGroupInspectorParams,
 ) => {
-  new InstanceGroupInspector(`${params.resourcePrefix}-inspector`, {
-    instanceTemplate: params.instanceTemplate,
-    numberOfInstances: params.numberOfInstances,
-    instanceGroupManager: params.instanceGroupManager,
-    region: params.region,
-    project: params.project,
-  });
+  return new InstanceGroupInspector(
+    `${params.resourcePrefix}-inspector`,
+    params,
+  );
 };
