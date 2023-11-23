@@ -9,7 +9,7 @@ createPublicGceService({
   },
   containerPort: 3000,
   initialStartupDelaySec: 30,
-  numberOfInstances: 1,
+  numberOfInstances: 0,
   healthCheck: {
     httpHealthCheck: {
       port: 3000,

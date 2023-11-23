@@ -36,8 +36,6 @@ async function checkAreAllInstancesHealthy(
       props.initialStartupDelaySec / props.healthCheck.checkIntervalSec,
     ) + props.healthCheck.unhealthyThreshold;
 
-  throw new Error('test');
-
   while (!isHealthy) {
     if (attempts > maxAttempts) {
       throw new Error(
