@@ -46,6 +46,7 @@ type CreatePublicGceServiceParams = {
   env: Env[];
   project: string;
   region: string;
+  machineType: string;
 };
 
 export const createPublicGceService = (
@@ -77,6 +78,7 @@ export const createPublicGceService = (
     image: params.image,
     secret: params.secret,
     env: params.env,
+    machineType: params.machineType,
   });
 
   const instanceGroupManager = createInstanceGroupManager({

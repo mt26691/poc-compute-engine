@@ -10,6 +10,7 @@ type CreateInstanceTemplateParams = {
   image: Image;
   secret: Secret;
   env: Env[];
+  machineType: string;
 };
 
 export const createInstanceTemplate = (
@@ -18,7 +19,7 @@ export const createInstanceTemplate = (
   const instanceTemplate = new gcp.compute.InstanceTemplate(
     `${params.resourcePrefix}-instance-template`,
     {
-      machineType: 'e2-standard-2',
+      machineType: params.machineType,
       metadata: createInstanceMetadata({
         resourcePrefix: params.resourcePrefix,
         image: params.image,

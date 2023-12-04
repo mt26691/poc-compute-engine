@@ -7,6 +7,7 @@ createPublicGceService({
   image: {
     url: imageUrl,
   },
+  machineType: 't2d-standard-1',
   containerPort: 3000,
   initialStartupDelaySec: 30,
   numberOfInstances: 1,
