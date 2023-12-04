@@ -15,6 +15,7 @@ app.get('/', async (req, res) => {
     revision: process.env.REVISION,
     ip: result.data,
     code: 'ok',
+    message: 'This is a sample app.',
   });
 });
 
