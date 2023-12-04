@@ -9,9 +9,6 @@ jobs:
   deploy:
     docker:
       - image: cimg/node:16.20
-    parameters:
-      my_name:
-        type: string
     steps:
       - checkout
       - setup_remote_docker:
