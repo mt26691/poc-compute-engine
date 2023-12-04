@@ -2,7 +2,6 @@ import compute from '@google-cloud/compute';
 import * as pulumi from '@pulumi/pulumi';
 import * as gcp from '@pulumi/gcp';
 import { waitSec } from '../utils/wait';
-import { HealthCheck } from './createPublicGceService';
 
 type CreateInstanceGroupInspectorParams = {
   resourcePrefix: string;
