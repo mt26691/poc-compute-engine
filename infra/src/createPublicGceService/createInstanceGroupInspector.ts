@@ -10,7 +10,6 @@ type CreateInstanceGroupInspectorParams = {
   project: string;
   numberOfInstances: number;
   initialStartupDelaySec: number;
-  healthCheck: HealthCheck;
   instanceTemplate: gcp.compute.InstanceTemplate;
   instanceGroupManager: gcp.compute.RegionInstanceGroupManager;
 };
@@ -25,16 +24,16 @@ type CheckAreAllInstancesHealthyProps = InstanceGroupInspectorProps & {
   instanceGroupManager: string;
 };
 
+const THIRTY_MINUTES = 30 * 60;
+const TIME_INTERVAL = 10;
+
 async function checkAreAllInstancesHealthy(
   props: CheckAreAllInstancesHealthyProps,
 ): Promise<void> {
   const client = new compute.RegionInstanceGroupManagersClient();
   let isHealthy = false;
   let attempts = 0;
-  const maxAttempts =
-    Math.ceil(
-      props.initialStartupDelaySec / props.healthCheck.checkIntervalSec,
-    ) + props.healthCheck.unhealthyThreshold;
+  const maxAttempts = THIRTY_MINUTES / TIME_INTERVAL;
 
   while (!isHealthy) {
     if (attempts > maxAttempts) {
@@ -69,7 +68,7 @@ async function checkAreAllInstancesHealthy(
 
     if (!isHealthy) {
       attempts += 1;
-      await waitSec(props.healthCheck.checkIntervalSec);
+      await waitSec(TIME_INTERVAL);
     }
   }
 }
