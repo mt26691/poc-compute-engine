@@ -32,8 +32,16 @@ app.get('/secrets', (req, res) => {
   });
 });
 
-app.post('/webhook', (req, res) => {
-  console.log('Message received', req.body);
+app.post('/webhook-1', (req, res) => {
+  console.log('/webhook-1 message received', req.body);
+
+  return res.status(200).json({
+    body: req.body,
+  });
+});
+
+app.post('/webhook-2', (req, res) => {
+  console.log('/webhook-2 message received', req.body);
 
   return res.status(200).json({
     body: req.body,
