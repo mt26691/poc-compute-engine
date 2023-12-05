@@ -7,6 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(logger());
+app.use(express.json());
 
 app.get('/', async (req, res) => {
   const result = await axios.get('https://api.ipify.org');
@@ -28,6 +29,14 @@ app.get('/healthz', (req, res) => {
 app.get('/secrets', (req, res) => {
   return res.status(200).json({
     secrets: process.env,
+  });
+});
+
+app.post('/webhook', (req, res) => {
+  console.log('Message received', req.body);
+
+  return res.status(200).json({
+    body: req.body,
   });
 });
 
