@@ -7,7 +7,6 @@ type RetryPolicy = {
 };
 
 type SubscribeTopicParams = {
-  resourcePrefix: string;
   subscriber: string;
   publisher: string;
   topic: pulumi.Input<string>;
@@ -27,18 +26,18 @@ const RETRY_POLICY: RetryPolicy = {
 
 export const subscribeTopic = (params: SubscribeTopicParams) => {
   const dlqTopic = new gcp.pubsub.Topic(
-    `${params.resourcePrefix}-${params.subscriber}-sub-${params.publisher}-dlq-topic`,
+    `${params.subscriber}-sub-${params.publisher}-dlq-topic`,
   );
 
   const dlq = new gcp.pubsub.Subscription(
-    `${params.resourcePrefix}-${params.subscriber}-sub-${params.publisher}-dlq`,
+    `${params.subscriber}-sub-${params.publisher}-dlq`,
     {
       topic: dlqTopic.name,
     },
   );
 
   const sub = new gcp.pubsub.Subscription(
-    `${params.resourcePrefix}-${params.subscriber}-sub-${params.publisher}`,
+    `${params.subscriber}-sub-${params.publisher}`,
     {
       topic: params.topic,
       ackDeadlineSeconds: params.ackDeadlineSeconds ?? ACK_DEADLINE_SECONDS,

@@ -7,17 +7,15 @@ const topic = createTopic({
 });
 
 subscribeTopic({
-  resourcePrefix: 'linhvuvan',
   topic: topic.name,
   pushEndpoint: 'https://linhvuvan.com/webhook-1',
-  subscriber: 'app',
+  subscriber: 'webhook-1',
   publisher: 'linhvuvan',
 });
 
 subscribeTopic({
-  resourcePrefix: 'linhvuvan',
   topic: topic.name,
   pushEndpoint: 'https://linhvuvan.com/webhook-2',
-  subscriber: 'app',
+  subscriber: 'webhook-2',
   publisher: 'linhvuvan',
 });
