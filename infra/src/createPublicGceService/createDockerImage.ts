@@ -10,7 +10,7 @@ export const createDockerImage = (params: CreateDockerImageParams) => {
   new docker.Image(`${params.resourcePrefix}-docker`, {
     imageName: params.image.url,
     build: {
-      context: '../app',
+      context: params.image.context,
       platform: 'linux/amd64',
     },
   });

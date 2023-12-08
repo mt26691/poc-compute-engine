@@ -2,5 +2,13 @@
   "scripts": {
     "deploy": "cd infra && npm run deploy",
     "destroy": "cd infra && npm run destroy"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }

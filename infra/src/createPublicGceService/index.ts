@@ -1,19 +1,21 @@
 import { createPublicGceService } from './createPublicGceService';
 
-const imageUrl = 'gcr.io/tat-den/poc-compute-engine:26';
+const imageUrl = 'gcr.io/tat-den/poc-compute-engine:27';
+const PORT = 3000;
 
 createPublicGceService({
   resourcePrefix: 'poc-compute-engine',
   image: {
     url: imageUrl,
+    context: '../server',
   },
   machineType: 't2d-standard-1',
-  containerPort: 3000,
+  containerPort: PORT,
   initialStartupDelaySec: 30,
   numberOfInstances: 1,
   healthCheck: {
     httpHealthCheck: {
-      port: 3000,
+      port: PORT,
       requestPath: '/healthz',
     },
     checkIntervalSec: 10,
@@ -24,6 +26,10 @@ createPublicGceService({
     {
       name: 'REVISION',
       value: imageUrl,
+    },
+    {
+      name: 'PORT',
+      value: String(PORT),
     },
   ],
   secret: {

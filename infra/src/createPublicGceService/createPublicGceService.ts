@@ -17,6 +17,7 @@ export type Secret = {
 
 export type Image = {
   url: string;
+  context: string;
 };
 
 export type Env = {
