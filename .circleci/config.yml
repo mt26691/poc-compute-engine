@@ -30,9 +30,9 @@ jobs:
           command: npm ci
           working_directory: ./infra
       - run:
-          name: Install npm dependencies in the app directory
+          name: Install npm dependencies in the server directory
           command: npm ci
-          working_directory: ./app
+          working_directory: ./server
       - run:
           name: Preview pulumi changes
           command: pulumi preview -s linhvuvan2022/poc-compute-engine/dev
