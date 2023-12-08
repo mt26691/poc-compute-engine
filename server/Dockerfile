@@ -1,6 +1,6 @@
 FROM node:16-alpine
 
-WORKDIR /app
+WORKDIR /server
 
 COPY package* .
 
@@ -10,4 +10,4 @@ COPY . .
 
 RUN npm run build
 
-CMD ["node", "build/server.js"]
+CMD ["node", "build/index.js"]
