@@ -1,6 +1,6 @@
 import { createPublicGceService } from './createPublicGceService';
 
-const imageUrl = 'gcr.io/tat-den/poc-compute-engine:27';
+const imageUrl = 'gcr.io/tat-den/poc-compute-engine:28';
 const PORT = 3000;
 
 createPublicGceService({
