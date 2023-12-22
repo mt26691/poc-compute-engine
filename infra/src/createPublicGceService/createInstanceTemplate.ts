@@ -1,6 +1,6 @@
 import * as gcp from '@pulumi/gcp';
 import { createInstanceMetadata } from './createInstanceMetadata';
-import { Env, Image, Secret } from './createPublicGceService';
+import { Env, Image, Secret } from '.';
 
 type CreateInstanceTemplateParams = {
   resourcePrefix: string;

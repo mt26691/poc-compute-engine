@@ -1,5 +1,5 @@
 import * as docker from '@pulumi/docker';
-import { Image } from './createPublicGceService';
+import { Image } from '.';
 
 type CreateDockerImageParams = {
   resourcePrefix: string;

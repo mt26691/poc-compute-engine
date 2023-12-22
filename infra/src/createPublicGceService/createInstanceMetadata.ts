@@ -1,5 +1,5 @@
 import * as yaml from 'yaml';
-import { Env, Image, Secret } from './createPublicGceService';
+import { Env, Image, Secret } from '.';
 
 type CreateInstanceMetadataParams = {
   resourcePrefix: string;
