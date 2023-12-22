@@ -5,7 +5,7 @@ const topic = new gcp.pubsub.Topic(`${serviceName}-topic`, {
   name: serviceName,
 });
 
-const subscription = new gcp.pubsub.Subscription(
+export const subscription = new gcp.pubsub.Subscription(
   `${serviceName}-subscription`,
   {
     topic: topic.name,
