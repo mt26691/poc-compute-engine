@@ -2,9 +2,10 @@ import { createPublicGceService } from './createPublicGceService';
 
 const imageUrl = 'gcr.io/tat-den/poc-compute-engine:28';
 const PORT = 3000;
+export const serviceName = 'poc-compute-engine';
 
 createPublicGceService({
-  resourcePrefix: 'poc-compute-engine',
+  resourcePrefix: serviceName,
   image: {
     url: imageUrl,
     context: '../server',
@@ -34,10 +35,10 @@ createPublicGceService({
   ],
   secret: {
     project: 'chi-dau',
-    name: 'poc-compute-engine',
+    name: serviceName,
   },
   instance: {
-    baseName: 'poc-compute-engine',
+    baseName: serviceName,
     roles: [
       {
         role: 'roles/secretmanager.secretAccessor',
