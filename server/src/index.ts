@@ -17,7 +17,9 @@ app.get('/healthz', (req, res) => {
 
 app.post('/event', async (req, res) => {
   console.log('/event', req.body);
-  await pubsub.topic(TOPIC_NAME).publishMessage(req.body);
+  await pubsub.topic(TOPIC_NAME).publishMessage({
+    json: req.body,
+  });
 
   return res.status(200).json({
     message: 'ok',

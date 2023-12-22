@@ -1,8 +1,7 @@
 import { createPublicGceService } from './utils/createPublicGceService';
-import { execSync } from 'child_process';
 
 const PORT = 3000;
-export const imageUrl = `gcr.io/tat-den/poc-compute-engine:31`;
+export const imageUrl = `gcr.io/tat-den/poc-compute-engine:32`;
 export const serviceName = 'poc-compute-engine';
 
 createPublicGceService({
@@ -52,6 +51,10 @@ createPublicGceService({
       {
         role: 'roles/storage.objectViewer',
         project: 'tat-den',
+      },
+      {
+        role: 'roles/pubsub.publisher',
+        project: 'chi-dau',
       },
     ],
   },
