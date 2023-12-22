@@ -30,12 +30,6 @@ jobs:
           command: npm ci
           working_directory: ./infra
       - run:
-          name: Install npm dependencies and build the client
-          command: |
-            npm ci
-            npm run build
-          working_directory: ./client
-      - run:
           name: Preview pulumi changes
           command: pulumi preview -s linhvuvan2022/poc-compute-engine/dev
           working_directory: ./infra
