@@ -10,8 +10,7 @@ const subscription = new gcp.pubsub.Subscription(
   `${serviceName}-subscription`,
   {
     topic: topic.name,
-    pushConfig: {
-      pushEndpoint: `https://linhvuvan.com/webhook`,
-    },
+    enableExactlyOnceDelivery: true,
+    enableMessageOrdering: true,
   },
 );

@@ -26,12 +26,9 @@ app.post('/event', async (req, res) => {
   });
 });
 
-app.post('/webhook', async (req, res) => {
-  console.log('/webhook', req.body);
-
-  return res.status(200).json({
-    message: 'ok',
-  });
+pubsub.subscription(TOPIC_NAME).on('message', (message) => {
+  console.log('message', message.data.toString());
+  message.ack();
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
