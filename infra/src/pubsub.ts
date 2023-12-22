@@ -10,6 +10,7 @@ const subscription = new gcp.pubsub.Subscription(
   `${serviceName}-subscription`,
   {
     topic: topic.name,
+    name: serviceName,
     enableExactlyOnceDelivery: true,
     enableMessageOrdering: true,
   },
