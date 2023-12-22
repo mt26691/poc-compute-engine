@@ -56,6 +56,10 @@ createPublicGceService({
         role: 'roles/pubsub.publisher',
         project: 'chi-dau',
       },
+      {
+        role: 'roles/pubsub.subscriber',
+        project: 'chi-dau',
+      },
     ],
   },
   domain: 'linhvuvan.com',
