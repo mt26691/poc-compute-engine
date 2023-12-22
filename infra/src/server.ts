@@ -2,10 +2,7 @@ import { createPublicGceService } from './utils/createPublicGceService';
 import { execSync } from 'child_process';
 
 const PORT = 3000;
-const revision = execSync('git rev-parse HEAD', { cwd: '../server' })
-  .toString()
-  .trim();
-export const imageUrl = `gcr.io/tat-den/poc-compute-engine:${revision}`;
+export const imageUrl = `gcr.io/tat-den/poc-compute-engine:31`;
 export const serviceName = 'poc-compute-engine';
 
 createPublicGceService({
@@ -30,7 +27,7 @@ createPublicGceService({
   env: [
     {
       name: 'REVISION',
-      value: revision,
+      value: imageUrl,
     },
     {
       name: 'PORT',

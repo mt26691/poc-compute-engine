@@ -16,6 +16,7 @@ app.get('/healthz', (req, res) => {
 });
 
 app.post('/event', async (req, res) => {
+  console.log('/event', req.body);
   await pubsub.topic(TOPIC_NAME).publishMessage(req.body);
 
   return res.status(200).json({
@@ -24,7 +25,7 @@ app.post('/event', async (req, res) => {
 });
 
 app.post('/webhook', async (req, res) => {
-  console.log(req.body);
+  console.log('/webhook', req.body);
 
   return res.status(200).json({
     message: 'ok',
