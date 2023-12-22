@@ -1,2 +1,2 @@
-import './server';
+export * from './server';
 import './pubsub';
