@@ -1,4 +1,4 @@
-import { createPublicGceService } from './createPublicGceService';
+import { createPublicGceService } from './utils/createPublicGceService';
 import { execSync } from 'child_process';
 
 const PORT = 3000;

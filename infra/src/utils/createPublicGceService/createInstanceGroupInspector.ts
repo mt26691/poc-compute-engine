@@ -1,7 +1,7 @@
 import compute from '@google-cloud/compute';
 import * as pulumi from '@pulumi/pulumi';
 import * as gcp from '@pulumi/gcp';
-import { waitSec } from '../utils/wait';
+import { waitSec } from '../wait';
 
 type CreateInstanceGroupInspectorParams = {
   resourcePrefix: string;
@@ -23,21 +23,21 @@ type CheckAreAllInstancesHealthyProps = InstanceGroupInspectorProps & {
   instanceGroupManager: string;
 };
 
-const THIRTY_MINUTES = 30 * 60;
-const TIME_INTERVAL = 10;
+const STATUS_CHECK_INTERVAL_SEC = 10;
+const ONE_HOUR = 60 * 60;
 
 async function checkAreAllInstancesHealthy(
-  props: CheckAreAllInstancesHealthyProps,
+  props: CheckAreAllInstancesHealthyProps
 ): Promise<void> {
   const client = new compute.RegionInstanceGroupManagersClient();
   let isHealthy = false;
   let attempts = 0;
-  const maxAttempts = THIRTY_MINUTES / TIME_INTERVAL;
+  const maxAttempts = ONE_HOUR / STATUS_CHECK_INTERVAL_SEC;
 
   while (!isHealthy) {
     if (attempts > maxAttempts) {
       throw new Error(
-        `Instance group manager ${props.instanceGroupManager} is not healthy after ${maxAttempts} attempts`,
+        `Instance group manager ${props.instanceGroupManager} is not healthy after ${attempts} attempts`
       );
     }
 
@@ -47,28 +47,42 @@ async function checkAreAllInstancesHealthy(
       instanceGroupManager: props.instanceGroupManager.split('/').pop(),
     });
 
-    const newInstances = instances.filter((instance) =>
-      instance.version?.instanceTemplate?.includes(props.instanceTemplate),
+    const newInstances = instances.filter(
+      (instance) =>
+        instance.version?.instanceTemplate?.includes(props.instanceTemplate)
     );
 
     isHealthy =
       newInstances.every(
         (instance) =>
           instance.instanceStatus === 'RUNNING' &&
-          instance.currentAction === 'NONE',
+          instance.currentAction === 'NONE'
       ) && newInstances.length === props.numberOfInstances;
 
-    console.log(`Attempts number ${attempts}`, {
+    const isRecreating = newInstances.some(
+      (instance) => instance.currentAction === 'RECREATING'
+    );
+
+    console.log(`Attempt no. ${attempts}`, {
       isHealthy,
+      maxAttempts,
       instanceTemplate: props.instanceTemplate,
       instances,
       newInstances,
+      timestamp: new Date().toISOString(),
     });
 
-    if (!isHealthy) {
-      attempts += 1;
-      await waitSec(TIME_INTERVAL);
+    if (isRecreating) {
+      throw new Error(
+        `Instances are unable to start and being recreated by the instance group manager ${props.instanceGroupManager}`
+      );
     }
+
+    if (!isHealthy) {
+      await waitSec(STATUS_CHECK_INTERVAL_SEC);
+    }
+
+    attempts += 1;
   }
 }
 
@@ -76,14 +90,14 @@ class InstanceGroupInspector extends pulumi.dynamic.Resource {
   constructor(
     name: string,
     props: InstanceGroupInspectorProps,
-    opts?: pulumi.CustomResourceOptions,
+    opts?: pulumi.CustomResourceOptions
   ) {
     super(
       {
         create: async (inputs) => {
           await checkAreAllInstancesHealthy(inputs);
 
-          return { id: name, failures: [] };
+          return { id: name };
         },
         update: async (id, olds, news) => {
           await checkAreAllInstancesHealthy(news);
@@ -95,16 +109,16 @@ class InstanceGroupInspector extends pulumi.dynamic.Resource {
       },
       name,
       props,
-      opts,
+      opts
     );
   }
 }
 
 export const createInstanceGroupInspector = (
-  params: CreateInstanceGroupInspectorParams,
+  params: CreateInstanceGroupInspectorParams
 ) => {
   return new InstanceGroupInspector(
     `${params.resourcePrefix}-inspector`,
-    params,
+    params
   );
 };
