@@ -25,6 +25,12 @@ export type Instance = {
   }[];
 };
 
+export type SecretVolume = {
+  name: string;
+  hostPath: string;
+  mountPath: string;
+};
+
 export type SecretData = pulumi.Output<string>;
 
 type CreatePublicGceServiceParams = {
@@ -67,7 +73,7 @@ export const createPublicGceService = (
   const secret = createSecret({
     resourcePrefix: params.resourcePrefix,
     secretData: params.secretData,
-  })
+  });
 
   const instanceTemplate = createInstanceTemplate({
     resourcePrefix: params.resourcePrefix,
