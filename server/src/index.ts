@@ -18,6 +18,8 @@ app.get('/healthz', (req, res) => {
 });
 
 app.post('/event', async (req, res) => {
+  console.log('/event', req.body);
+
   await pubsub.topic(TOPIC_NAME).publishMessage({
     json: req.body,
     orderingKey: 'order-key',
