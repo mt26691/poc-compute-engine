@@ -1,4 +1,5 @@
 import * as gcp from '@pulumi/gcp';
+import * as pulumi from '@pulumi/pulumi';
 import * as yaml from 'yaml';
 import { Image } from '.';
 
@@ -41,7 +42,7 @@ export const createInstanceMetadata = (
       },
     }),
     'google-logging-enabled': 'true',
-    'startup-script': `
+    'startup-script': pulumi.interpolate`
       #!/bin/bash
       ACCESS_TOKEN=$(curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token --header "Metadata-Flavor: Google" | jq -r '.access_token')
 
