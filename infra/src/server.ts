@@ -57,4 +57,9 @@ createPublicGceService({
   managedZone: 'linhvuvan-com',
   project: 'chi-dau',
   region: 'us-central1',
+  secretVolume: {
+    name: 'env',
+    hostPath: '/tmp/.env',
+    mountPath: '/server/.env',
+  },
 });

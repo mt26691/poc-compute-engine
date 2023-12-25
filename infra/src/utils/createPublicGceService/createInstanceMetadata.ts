@@ -1,12 +1,13 @@
 import * as gcp from '@pulumi/gcp';
 import * as pulumi from '@pulumi/pulumi';
 import * as yaml from 'yaml';
-import { Image } from '.';
+import { Image, SecretVolume } from '.';
 
 type CreateInstanceMetadataParams = {
   resourcePrefix: string;
   image: Image;
   secret: gcp.secretmanager.Secret;
+  secretVolume: SecretVolume;
 };
 
 export const createInstanceMetadata = (
@@ -23,8 +24,8 @@ export const createInstanceMetadata = (
             tty: false,
             volumeMounts: [
               {
-                name: 'env',
-                mountPath: '/app/.env',
+                name: params.secretVolume.name,
+                mountPath: params.secretVolume.mountPath,
                 readOnly: true,
               },
             ],
@@ -32,9 +33,9 @@ export const createInstanceMetadata = (
         ],
         volumes: [
           {
-            name: 'env',
+            name: params.secretVolume.name,
             hostPath: {
-              path: '/tmp/.env',
+              path: params.secretVolume.hostPath,
             },
           },
         ],

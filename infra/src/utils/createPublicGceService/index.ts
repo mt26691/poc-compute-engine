@@ -47,6 +47,7 @@ type CreatePublicGceServiceParams = {
   region: string;
   machineType: string;
   secretData: SecretData;
+  secretVolume: SecretVolume;
 };
 
 export const createPublicGceService = (
@@ -83,6 +84,7 @@ export const createPublicGceService = (
     image: params.image,
     secret,
     machineType: params.machineType,
+    secretVolume: params.secretVolume,
   });
 
   const instanceGroupManager = createInstanceGroupManager({
