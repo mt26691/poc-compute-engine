@@ -1,7 +1,7 @@
 import { createPublicGceService } from './utils/createPublicGceService';
 
 const PORT = 3000;
-const imageUrl = `gcr.io/tat-den/poc-compute-engine:35`;
+const imageUrl = `gcr.io/tat-den/poc-compute-engine:40`;
 export const serviceName = 'poc-compute-engine';
 
 createPublicGceService({
@@ -35,7 +35,7 @@ createPublicGceService({
   ],
   secret: {
     project: 'chi-dau',
-    name: serviceName,
+    name: 'linhvuvan',
   },
   instance: {
     baseName: serviceName,
