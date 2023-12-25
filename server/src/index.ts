@@ -28,11 +28,29 @@ app.post('/event', async (req, res) => {
   });
 });
 
-if (SUBSCRIPTION_NAME !== 'unset') {
+app.get('/event', (req, res) => {
+  if (SUBSCRIPTION_NAME === 'unset') {
+    return res.status(200).json({
+      message: 'Subscription name is not set',
+    });
+  }
+
   pubsub.subscription(SUBSCRIPTION_NAME).on('message', (message) => {
-    console.log('message', message.data.toString());
+    console.log('message', message.data.toString(), message.publishTime);
     message.ack();
   });
-}
+
+  pubsub.subscription(SUBSCRIPTION_NAME).on('error', (error) => {
+    console.error('error', error);
+  });
+
+  pubsub.subscription(SUBSCRIPTION_NAME).on('close', () => {
+    console.log('closed');
+
+    res.status(200).json({
+      message: 'ok',
+    });
+  });
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

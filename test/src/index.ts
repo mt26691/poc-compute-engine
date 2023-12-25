@@ -4,7 +4,7 @@ import axios from 'axios';
   for (let i = 0; i < 100; i++) {
     const res = await axios.post('https://linhvuvan.com/event', {
       hi: 'axios',
-      version: 1,
+      version: 5,
       attempt: i,
     });
 
