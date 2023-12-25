@@ -4,6 +4,6 @@ export const topic = new gcp.pubsub.Topic('topic');
 
 export const subscription = new gcp.pubsub.Subscription('subscription', {
   topic: topic.name,
-  enableExactlyOnceDelivery: true,
-  enableMessageOrdering: true,
+  // enableExactlyOnceDelivery: true,
+  // enableMessageOrdering: true,
 });

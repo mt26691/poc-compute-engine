@@ -3,7 +3,8 @@ import axios from 'axios';
 (async () => {
   for (let i = 0; i < 100; i++) {
     const res = await axios.post('https://linhvuvan.com/event', {
-      hi: 'linhvuvan',
+      hi: 'axios',
+      version: 1,
       attempt: i,
     });
 
