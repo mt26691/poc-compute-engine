@@ -2,6 +2,7 @@ import * as gcp from '@pulumi/gcp';
 import { Image, SecretVolume } from '.';
 import { buildStartupScript } from './buildStartupScript';
 import { createInstanceMetadata } from './createInstanceMetadata';
+import { buildInstanceMetadata } from './buildInstanceMetadata';
 
 type CreateInstanceTemplateParams = {
   resourcePrefix: string;
@@ -17,16 +18,42 @@ type CreateInstanceTemplateParams = {
 export const createInstanceTemplate = (
   params: CreateInstanceTemplateParams,
 ) => {
+  const metadata = buildInstanceMetadata({
+    containerDeclaration: {
+      spec: {
+        containers: [
+          {
+            name: params.resourcePrefix,
+            image: params.image.url,
+            stdin: false,
+            tty: false,
+            volumeMounts: [
+              {
+                name: params.secretVolume.name,
+                readOnly: true,
+                mountPath: params.secretVolume.mountPath,
+              },
+            ],
+          },
+        ],
+        volumes: [
+          {
+            name: params.secretVolume.name,
+            hostPath: {
+              path: params.secretVolume.hostPath,
+            },
+          },
+        ],
+        restartPolicy: 'Always',
+      },
+    },
+  });
+
   const instanceTemplate = new gcp.compute.InstanceTemplate(
     `${params.resourcePrefix}-instance-template`,
     {
       machineType: params.machineType,
-      metadata: createInstanceMetadata({
-        resourcePrefix: params.resourcePrefix,
-        image: params.image,
-        secret: params.secret,
-        secretVolume: params.secretVolume,
-      }),
+      metadata,
       disks: [
         {
           sourceImage: 'projects/cos-cloud/global/images/family/cos-109-lts',
@@ -46,7 +73,7 @@ export const createInstanceTemplate = (
       metadataStartupScript: buildStartupScript({
         secret: params.secret,
         secretVolume: params.secretVolume,
-      })
+      }),
     },
   );
 
