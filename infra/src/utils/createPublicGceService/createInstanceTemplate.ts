@@ -1,6 +1,7 @@
 import * as gcp from '@pulumi/gcp';
-import { createInstanceMetadata } from './createInstanceMetadata';
 import { Image, SecretVolume } from '.';
+import { buildStartupScript } from './buildStartupScript';
+import { createInstanceMetadata } from './createInstanceMetadata';
 
 type CreateInstanceTemplateParams = {
   resourcePrefix: string;
@@ -42,6 +43,10 @@ export const createInstanceTemplate = (
         email: params.serviceAccount.email,
         scopes: ['cloud-platform'],
       },
+      metadataStartupScript: buildStartupScript({
+        secret: params.secret,
+        secretVolume: params.secretVolume,
+      })
     },
   );
 
