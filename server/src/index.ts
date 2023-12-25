@@ -27,7 +27,7 @@ app.post('/event', async (req, res) => {
   });
 });
 
-if (SUBSCRIPTION_NAME === 'unset') {
+if (SUBSCRIPTION_NAME !== 'unset') {
   pubsub.subscription(SUBSCRIPTION_NAME).on('message', (message) => {
     console.log('message', message.data.toString());
     message.ack();

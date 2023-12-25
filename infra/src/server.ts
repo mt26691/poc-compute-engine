@@ -3,7 +3,7 @@ import { createPublicGceService } from './utils/createPublicGceService';
 import { subscription, topic } from './pubsub';
 
 const PORT = 3000;
-const imageUrl = `gcr.io/tat-den/poc-compute-engine:42`;
+const imageUrl = `gcr.io/tat-den/poc-compute-engine:43`;
 export const serviceName = 'poc-compute-engine';
 
 createPublicGceService({
@@ -21,9 +21,6 @@ createPublicGceService({
       port: PORT,
       requestPath: '/healthz',
     },
-    checkIntervalSec: 10,
-    healthyThreshold: 1,
-    unhealthyThreshold: 1,
   },
   secretData: pulumi.interpolate`
     PORT=${PORT}
