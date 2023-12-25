@@ -28,16 +28,6 @@ createPublicGceService({
     PORT=${PORT}
     REVISION=${imageUrl}
   `,
-  env: [
-    {
-      name: 'REVISION',
-      value: imageUrl,
-    },
-    {
-      name: 'PORT',
-      value: String(PORT),
-    },
-  ],
   instance: {
     baseName: serviceName,
     roles: [

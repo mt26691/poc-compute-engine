@@ -17,11 +17,6 @@ export type Image = {
   context: string;
 };
 
-export type Env = {
-  name: string;
-  value: string;
-};
-
 export type Instance = {
   baseName: string;
   roles: {
@@ -42,7 +37,6 @@ type CreatePublicGceServiceParams = {
   instance: Instance;
   domain: string;
   managedZone: string;
-  env: Env[];
   project: string;
   region: string;
   machineType: string;
@@ -82,7 +76,6 @@ export const createPublicGceService = (
     serviceAccount,
     image: params.image,
     secret,
-    env: params.env,
     machineType: params.machineType,
   });
 
