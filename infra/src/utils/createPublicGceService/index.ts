@@ -1,4 +1,5 @@
 import * as gcp from '@pulumi/gcp';
+import * as pulumi from '@pulumi/pulumi';
 import { createInstanceServiceAccount } from './createInstanceServiceAccount';
 import { createNetwork } from './createNetwork';
 import { createSubnetwork } from './createSubnetwork';
@@ -9,11 +10,7 @@ import { createInstanceGroupManager } from './createInstanceGroupManager';
 import { createInstanceTemplate } from './createInstanceTemplate';
 import { createDockerImage } from './createDockerImage';
 import { createInstanceGroupInspector } from './createInstanceGroupInspector';
-
-export type Secret = {
-  project: string;
-  name: string;
-};
+import { createSecret } from './createSecret';
 
 export type Image = {
   url: string;
@@ -33,6 +30,8 @@ export type Instance = {
   }[];
 };
 
+export type SecretData = pulumi.Output<string>;
+
 type CreatePublicGceServiceParams = {
   resourcePrefix: string;
   image: Image;
@@ -40,7 +39,6 @@ type CreatePublicGceServiceParams = {
   initialStartupDelaySec: number;
   numberOfInstances: number;
   healthCheck: gcp.compute.HealthCheckArgs;
-  secret: Secret;
   instance: Instance;
   domain: string;
   managedZone: string;
@@ -48,6 +46,7 @@ type CreatePublicGceServiceParams = {
   project: string;
   region: string;
   machineType: string;
+  secretData: SecretData;
 };
 
 export const createPublicGceService = (
@@ -71,13 +70,18 @@ export const createPublicGceService = (
     roles: params.instance.roles,
   });
 
+  const secret = createSecret({
+    resourcePrefix: params.resourcePrefix,
+    secretData: params.secretData,
+  })
+
   const instanceTemplate = createInstanceTemplate({
     resourcePrefix: params.resourcePrefix,
     network,
     subnetwork,
     serviceAccount,
     image: params.image,
-    secret: params.secret,
+    secret,
     env: params.env,
     machineType: params.machineType,
   });

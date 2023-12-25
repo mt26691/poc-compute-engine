@@ -1,7 +1,8 @@
+import * as pulumi from '@pulumi/pulumi';
 import { createPublicGceService } from './utils/createPublicGceService';
 
 const PORT = 3000;
-const imageUrl = `gcr.io/tat-den/poc-compute-engine:40`;
+const imageUrl = `gcr.io/tat-den/poc-compute-engine:41`;
 export const serviceName = 'poc-compute-engine';
 
 createPublicGceService({
@@ -23,6 +24,10 @@ createPublicGceService({
     healthyThreshold: 1,
     unhealthyThreshold: 1,
   },
+  secretData: pulumi.interpolate`
+    PORT=${PORT}
+    REVISION=${imageUrl}
+  `,
   env: [
     {
       name: 'REVISION',
@@ -33,10 +38,6 @@ createPublicGceService({
       value: String(PORT),
     },
   ],
-  secret: {
-    project: 'chi-dau',
-    name: 'linhvuvan',
-  },
   instance: {
     baseName: serviceName,
     roles: [
