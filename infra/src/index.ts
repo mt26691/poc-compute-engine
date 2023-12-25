@@ -1,2 +1,1 @@
-// import './server';
-// import './pubsub';
+import './server';

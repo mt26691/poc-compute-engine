@@ -3,8 +3,8 @@ import { pubsub } from './pubsub';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const TOPIC_NAME = process.env.TOPIC_NAME || 'poc-compute-engine';
-const SUBSCRIPTION_NAME = process.env.SUBSCRIPTION_NAME || 'poc-compute-engine';
+const TOPIC_NAME = process.env.TOPIC_NAME || 'unset';
+const SUBSCRIPTION_NAME = process.env.SUBSCRIPTION_NAME || 'unset';
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -27,9 +27,11 @@ app.post('/event', async (req, res) => {
   });
 });
 
-pubsub.subscription(SUBSCRIPTION_NAME).on('message', (message) => {
-  console.log('message', message.data.toString());
-  message.ack();
-});
+if (SUBSCRIPTION_NAME === 'unset') {
+  pubsub.subscription(SUBSCRIPTION_NAME).on('message', (message) => {
+    console.log('message', message.data.toString());
+    message.ack();
+  });
+}
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
