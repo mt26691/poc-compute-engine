@@ -21,9 +21,9 @@ const waitSec = (sec: number) => {
 // listen for new messages
 subscription = pubsub
   .subscription(SUBSCRIPTION_NAME, {
-    batching: {
-      maxMessages: 1,
-    },
+    // batching: {
+    //   maxMessages: 1,
+    // },
   })
   .on('message', async (message) => {
     const data = JSON.parse(message.data.toString());
