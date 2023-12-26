@@ -26,8 +26,12 @@ subscription = pubsub
     message.ack();
   });
 
-pubsub.subscription(SUBSCRIPTION_NAME).on('error', (error) => {
+subscription.on('error', (error) => {
   console.error('error', error);
+});
+
+subscription.on('close', () => {
+  console.log('subscription closed');
 });
 
 app.get('/healthz', (req, res) => {
@@ -51,6 +55,7 @@ app.post('/event', async (req, res) => {
 });
 
 app.post('/pubsub/open', (req, res) => {
+  console.log('/pubsub/open');
   subscription.open();
 
   return res.status(200).json({
@@ -59,6 +64,7 @@ app.post('/pubsub/open', (req, res) => {
 });
 
 app.post('/pubsub/close', async (req, res) => {
+  console.log('/pubsub/close');
   await subscription.close();
 
   return res.status(200).json({
