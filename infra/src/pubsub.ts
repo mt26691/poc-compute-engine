@@ -12,6 +12,10 @@ export const subscription = new gcp.pubsub.Subscription('subscription', {
   topic: topic.name,
   enableExactlyOnceDelivery: true,
   enableMessageOrdering: true,
+  retryPolicy: {
+    minimumBackoff: '3s',
+    maximumBackoff: '5s',
+  },
   deadLetterPolicy: {
     deadLetterTopic: dlq.id,
     maxDeliveryAttempts: 5,
