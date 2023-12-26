@@ -14,5 +14,6 @@ export const subscription = new gcp.pubsub.Subscription('subscription', {
   enableMessageOrdering: true,
   deadLetterPolicy: {
     deadLetterTopic: dlq.name,
+    maxDeliveryAttempts: 5,
   },
 });
