@@ -98,15 +98,15 @@ export const createPublicGceService = (
     region: params.region,
   });
 
-  createInstanceGroupInspector({
-    resourcePrefix: params.resourcePrefix,
-    region: params.region,
-    project: params.project,
-    numberOfInstances: params.numberOfInstances,
-    instanceTemplate: instanceTemplate,
-    instanceGroupManager: instanceGroupManager,
-    initialStartupDelaySec: params.initialStartupDelaySec,
-  });
+  // createInstanceGroupInspector({
+  //   resourcePrefix: params.resourcePrefix,
+  //   region: params.region,
+  //   project: params.project,
+  //   numberOfInstances: params.numberOfInstances,
+  //   instanceTemplate: instanceTemplate,
+  //   instanceGroupManager: instanceGroupManager,
+  //   initialStartupDelaySec: params.initialStartupDelaySec,
+  // });
 
   const backend = createBackend({
     resourcePrefix: params.resourcePrefix,
