@@ -12,14 +12,23 @@ let subscription: Subscription;
 app.use(express.static('public'));
 app.use(express.json());
 
+const waitSec = (sec: number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, sec * 1000);
+  });
+}
+
+// listen for new messages
 subscription = pubsub
   .subscription(SUBSCRIPTION_NAME, {
     batching: {
       maxMessages: 1,
     },
   })
-  .on('message', (message) => {
+  .on('message', async (message) => {
     const data = JSON.parse(message.data.toString());
+
+    await waitSec(1);
 
     if (data.attempt === 51) {
       console.log('message unack', data, message.publishTime);
@@ -49,17 +58,11 @@ app.get('/healthz', (req, res) => {
 app.post('/event', async (req, res) => {
   console.log('/event', req.body);
 
-  await pubsub
-    .topic(TOPIC_NAME, {
-      batching: {
-        maxMessages: 1,
-      },
-      messageOrdering: true,
-    })
-    .publishMessage({
-      json: req.body,
-      orderingKey: req.body.orderingKey,
-    });
+  // publish message
+  await pubsub.topic(TOPIC_NAME).publishMessage({
+    json: req.body,
+    orderingKey: req.body.orderingKey,
+  });
 
   return res.status(200).json({
     message: 'ok',
