@@ -35,7 +35,7 @@ app.post('/event', async (req, res) => {
 
   await pubsub.topic(TOPIC_NAME).publishMessage({
     json: req.body,
-    orderingKey: 'order-key',
+    orderingKey: 'ordering-key',
   });
 
   return res.status(200).json({
@@ -43,7 +43,7 @@ app.post('/event', async (req, res) => {
   });
 });
 
-app.get('/pubsub/open', (req, res) => {
+app.post('/pubsub/open', (req, res) => {
   subscription.open();
 
   return res.status(200).json({
@@ -51,7 +51,7 @@ app.get('/pubsub/open', (req, res) => {
   });
 });
 
-app.get('/pubsub/close', (req, res) => {
+app.post('/pubsub/close', (req, res) => {
   subscription.close();
 
   return res.status(200).json({
