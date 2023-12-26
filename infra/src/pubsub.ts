@@ -1,6 +1,6 @@
 import * as gcp from '@pulumi/gcp';
 
-const dlq = new gcp.pubsub.Topic('dlq');
+const dlq = new gcp.pubsub.Topic('dlq-topic');
 
 const dlqSubscription = new gcp.pubsub.Subscription('dlq-subscription', {
   topic: dlq.name,
