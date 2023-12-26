@@ -60,3 +60,9 @@ app.post('/pubsub/close', async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  await subscription.close();
+  process.exit(0);
+});
