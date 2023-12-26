@@ -35,7 +35,7 @@ app.post('/event', async (req, res) => {
 
   await pubsub.topic(TOPIC_NAME).publishMessage({
     json: req.body,
-    orderingKey: 'ordering-key',
+    orderingKey: req.body.orderingKey,
   });
 
   return res.status(200).json({
