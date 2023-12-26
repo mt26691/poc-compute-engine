@@ -1,14 +1,27 @@
 import 'dotenv/config';
 import express from 'express';
 import { pubsub } from './pubsub';
+import { Subscription } from '@google-cloud/pubsub';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const TOPIC_NAME = process.env.TOPIC_NAME || 'unset';
 const SUBSCRIPTION_NAME = process.env.SUBSCRIPTION_NAME || 'unset';
+let subscription: Subscription;
 
 app.use(express.static('public'));
 app.use(express.json());
+
+subscription = pubsub
+  .subscription(SUBSCRIPTION_NAME)
+  .on('message', (message) => {
+    console.log('message', message.data.toString(), message.publishTime);
+    message.ack();
+  });
+
+pubsub.subscription(SUBSCRIPTION_NAME).on('error', (error) => {
+  console.error('error', error);
+});
 
 app.get('/healthz', (req, res) => {
   return res.status(200).json({
@@ -30,28 +43,19 @@ app.post('/event', async (req, res) => {
   });
 });
 
-app.get('/event', (req, res) => {
-  if (SUBSCRIPTION_NAME === 'unset') {
-    return res.status(200).json({
-      message: 'Subscription name is not set',
-    });
-  }
+app.get('/pubsub/open', (req, res) => {
+  subscription.open();
 
-  pubsub.subscription(SUBSCRIPTION_NAME).on('message', (message) => {
-    console.log('message', message.data.toString(), message.publishTime);
-    message.ack();
+  return res.status(200).json({
+    message: 'ok',
   });
+});
 
-  pubsub.subscription(SUBSCRIPTION_NAME).on('error', (error) => {
-    console.error('error', error);
-  });
+app.get('/pubsub/close', (req, res) => {
+  subscription.close();
 
-  pubsub.subscription(SUBSCRIPTION_NAME).on('close', () => {
-    console.log('closed');
-
-    res.status(200).json({
-      message: 'ok',
-    });
+  return res.status(200).json({
+    message: 'ok',
   });
 });
 
