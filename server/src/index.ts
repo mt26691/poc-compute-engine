@@ -19,7 +19,6 @@ subscription = pubsub
 
     if (data.attempt === 51) {
       console.log('message unack', data, message.publishTime);
-      message.nack();
       return;
     }
 
