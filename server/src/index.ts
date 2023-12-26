@@ -19,7 +19,7 @@ subscription = pubsub
 
     if (data.attempt === 51) {
       console.log('message unack', data, message.publishTime);
-      return;
+      throw new Error('unack');
     }
 
     console.log('message ack', data, message.publishTime);
@@ -68,14 +68,14 @@ app.post('/pubsub/close', async (req, res) => {
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  await subscription.close();
-  process.exit(0);
-});
+// process.on('SIGTERM', async () => {
+//   console.log('SIGTERM signal received: closing HTTP server');
+//   await subscription.close();
+//   process.exit(0);
+// });
 
-process.on('exit', async () => {
-  console.log('exit signal received: closing HTTP server');
-  await subscription.close();
-  process.exit(0);
-});
+// process.on('exit', async () => {
+//   console.log('exit signal received: closing HTTP server');
+//   await subscription.close();
+//   process.exit(0);
+// });
