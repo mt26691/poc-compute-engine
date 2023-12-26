@@ -13,7 +13,7 @@ export const subscription = new gcp.pubsub.Subscription('subscription', {
   enableExactlyOnceDelivery: true,
   enableMessageOrdering: true,
   deadLetterPolicy: {
-    deadLetterTopic: dlq.name,
+    deadLetterTopic: dlq.id,
     maxDeliveryAttempts: 5,
   },
 });
