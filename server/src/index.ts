@@ -15,7 +15,15 @@ app.use(express.json());
 subscription = pubsub
   .subscription(SUBSCRIPTION_NAME)
   .on('message', (message) => {
-    console.log('message', message.data.toString(), message.publishTime);
+    const data = JSON.parse(message.data.toString());
+
+    if (data.attempt === 51) {
+      console.log('message unack', data, message.publishTime);
+      message.nack();
+      return;
+    }
+
+    console.log('message ack', data, message.publishTime);
     message.ack();
   });
 
