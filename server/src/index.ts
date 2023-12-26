@@ -51,8 +51,8 @@ app.post('/pubsub/open', (req, res) => {
   });
 });
 
-app.post('/pubsub/close', (req, res) => {
-  subscription.close();
+app.post('/pubsub/close', async (req, res) => {
+  await subscription.close();
 
   return res.status(200).json({
     message: 'ok',
