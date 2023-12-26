@@ -66,3 +66,9 @@ process.on('SIGTERM', async () => {
   await subscription.close();
   process.exit(0);
 });
+
+process.on('exit', async () => {
+  console.log('exit signal received: closing HTTP server');
+  await subscription.close();
+  process.exit(0);
+});
