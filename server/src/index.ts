@@ -13,7 +13,11 @@ app.use(express.static('public'));
 app.use(express.json());
 
 subscription = pubsub
-  .subscription(SUBSCRIPTION_NAME)
+  .subscription(SUBSCRIPTION_NAME, {
+    batching: {
+      maxMessages: 1,
+    },
+  })
   .on('message', (message) => {
     const data = JSON.parse(message.data.toString());
 
@@ -45,10 +49,17 @@ app.get('/healthz', (req, res) => {
 app.post('/event', async (req, res) => {
   console.log('/event', req.body);
 
-  await pubsub.topic(TOPIC_NAME).publishMessage({
-    json: req.body,
-    orderingKey: req.body.orderingKey,
-  });
+  await pubsub
+    .topic(TOPIC_NAME, {
+      batching: {
+        maxMessages: 1,
+      },
+      messageOrdering: true,
+    })
+    .publishMessage({
+      json: req.body,
+      orderingKey: req.body.orderingKey,
+    });
 
   return res.status(200).json({
     message: 'ok',

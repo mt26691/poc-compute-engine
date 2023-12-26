@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 (async () => {
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 10; i++) {
     const res = await axios.post('https://linhvuvan.com/event', {
       hi: 'axios',
-      version: 1,
+      version: 4,
       attempt: i,
       orderingKey: 'axios',
     });
