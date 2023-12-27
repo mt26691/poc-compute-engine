@@ -27,9 +27,6 @@ subscription = pubsub
     flowControl: {
       maxMessages: 1,
     },
-    streamingOptions: {
-      maxStreams: 1,
-    },
   })
   .on('message', async (message) => {
     const data = JSON.parse(message.data.toString());
@@ -40,7 +37,7 @@ subscription = pubsub
       message.publishTime,
     );
 
-    await waitSec(5);
+    await waitSec(1);
 
     if (data.attempt === 51) {
       console.log(
