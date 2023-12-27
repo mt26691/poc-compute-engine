@@ -1,12 +1,12 @@
 import axios from 'axios';
 
 (async () => {
-  for (let i = 45; i < 55; i++) {
+  for (let i = 45; i < 50; i++) {
     const res = await axios.post('https://linhvuvan.com/event', {
       hi: 'axios',
       version: 4,
       attempt: i,
-      orderingKey: 'linhvuvan',
+      orderingKey: 'wms',
     });
 
     console.log('attempt', i, res.data);
