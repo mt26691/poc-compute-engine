@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import { pubsub } from './pubsub';
-import { Subscription } from '@google-cloud/pubsub';
+import { Message, Subscription } from '@google-cloud/pubsub';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,17 +19,11 @@ const waitSec = (sec: number) => {
   });
 };
 
-// listen for new messages
-subscription_one = pubsub
-  .subscription(SUBSCRIPTION_NAME, {
-    flowControl: {
-      maxMessages: 1,
-    },
-  })
-  .on('message', async (message) => {
+const createMessageHandler =
+  (pubsubName: string) => async (message: Message) => {
     const data = JSON.parse(message.data.toString());
     console.log(
-      'subscription_one message received',
+      `${pubsubName} message received`,
       data,
       new Date().toISOString(),
       message.publishTime,
@@ -39,7 +33,7 @@ subscription_one = pubsub
 
     if (data.attempt === 51) {
       console.log(
-        'subscription_one message unack',
+        `${pubsubName} message unack`,
         data,
         new Date().toISOString(),
         message.publishTime,
@@ -49,13 +43,22 @@ subscription_one = pubsub
     }
 
     console.log(
-      'subscription_one message ack',
+      `${pubsubName} message ack`,
       data,
       new Date().toISOString(),
       message.publishTime,
     );
     message.ack();
-  });
+  };
+
+// listen for new messages
+subscription_one = pubsub
+  .subscription(SUBSCRIPTION_NAME, {
+    flowControl: {
+      maxMessages: 1,
+    },
+  })
+  .on('message', createMessageHandler('subscription_one'));
 
 subscription_one.on('error', (error) => {
   console.error('subscription_one error', error);
@@ -72,36 +75,7 @@ subscription_two = pubsub
       maxMessages: 1,
     },
   })
-  .on('message', async (message) => {
-    const data = JSON.parse(message.data.toString());
-    console.log(
-      'subscription_two message received',
-      data,
-      new Date().toISOString(),
-      message.publishTime,
-    );
-
-    await waitSec(1);
-
-    if (data.attempt === 51) {
-      console.log(
-        'subscription_two message unack',
-        data,
-        new Date().toISOString(),
-        message.publishTime,
-      );
-      message.nack();
-      return;
-    }
-
-    console.log(
-      'subscription_two message ack',
-      data,
-      new Date().toISOString(),
-      message.publishTime,
-    );
-    message.ack();
-  });
+  .on('message', createMessageHandler('subscription_two'));
 
 subscription_two.on('error', (error) => {
   console.error('subscription_two error', error);
