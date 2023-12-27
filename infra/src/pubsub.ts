@@ -16,8 +16,8 @@ export const subscription = new gcp.pubsub.Subscription('subscription', {
     minimumBackoff: '3s',
     maximumBackoff: '5s',
   },
-  deadLetterPolicy: {
-    deadLetterTopic: dlq.id,
-    maxDeliveryAttempts: 5,
-  },
+  // deadLetterPolicy: {
+  //   deadLetterTopic: dlq.id,
+  //   maxDeliveryAttempts: 5,
+  // },
 });
