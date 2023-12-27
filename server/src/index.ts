@@ -21,9 +21,6 @@ const waitSec = (sec: number) => {
 // listen for new messages
 subscription = pubsub
   .subscription(SUBSCRIPTION_NAME, {
-    batching: {
-      maxMessages: 1,
-    },
     flowControl: {
       maxMessages: 1,
     },
@@ -78,17 +75,10 @@ app.post('/event', async (req, res) => {
   console.log('/event', req.body);
 
   // publish message
-  await pubsub
-    .topic(TOPIC_NAME, {
-      messageOrdering: true,
-      batching: {
-        maxMessages: 1,
-      },
-    })
-    .publishMessage({
-      json: req.body,
-      orderingKey: req.body.orderingKey,
-    });
+  await pubsub.topic(TOPIC_NAME).publishMessage({
+    json: req.body,
+    orderingKey: req.body.orderingKey,
+  });
 
   return res.status(200).json({
     message: 'ok',
