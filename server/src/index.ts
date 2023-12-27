@@ -24,6 +24,12 @@ subscription = pubsub
     batching: {
       maxMessages: 1,
     },
+    flowControl: {
+      maxMessages: 1,
+    },
+    streamingOptions: {
+      maxStreams: 1,
+    },
   })
   .on('message', async (message) => {
     const data = JSON.parse(message.data.toString());
