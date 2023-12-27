@@ -32,12 +32,22 @@ subscription = pubsub
     await waitSec(5);
 
     if (data.attempt === 51) {
-      console.log('message unack', data, message.publishTime);
+      console.log(
+        'message unack',
+        data,
+        new Date().toISOString(),
+        message.publishTime,
+      );
       message.nack();
       return;
     }
 
-    console.log('message ack', data, message.publishTime);
+    console.log(
+      'message ack',
+      data,
+      new Date().toISOString(),
+      message.publishTime,
+    );
     message.ack();
   });
 
