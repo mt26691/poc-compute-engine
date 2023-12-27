@@ -7,7 +7,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const TOPIC_NAME = process.env.TOPIC_NAME || 'unset';
 const SUBSCRIPTION_NAME = process.env.SUBSCRIPTION_NAME || 'unset';
-let subscription: Subscription;
+let subscription_one: Subscription;
+let subscription_two: Subscription;
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -19,7 +20,7 @@ const waitSec = (sec: number) => {
 };
 
 // listen for new messages
-subscription = pubsub
+subscription_one = pubsub
   .subscription(SUBSCRIPTION_NAME, {
     flowControl: {
       maxMessages: 1,
@@ -28,7 +29,7 @@ subscription = pubsub
   .on('message', async (message) => {
     const data = JSON.parse(message.data.toString());
     console.log(
-      'message received',
+      'subscription_one message received',
       data,
       new Date().toISOString(),
       message.publishTime,
@@ -38,7 +39,7 @@ subscription = pubsub
 
     if (data.attempt === 51) {
       console.log(
-        'message unack',
+        'subscription_one message unack',
         data,
         new Date().toISOString(),
         message.publishTime,
@@ -48,7 +49,7 @@ subscription = pubsub
     }
 
     console.log(
-      'message ack',
+      'subscription_one message ack',
       data,
       new Date().toISOString(),
       message.publishTime,
@@ -56,12 +57,58 @@ subscription = pubsub
     message.ack();
   });
 
-subscription.on('error', (error) => {
-  console.error('error', error);
+subscription_one.on('error', (error) => {
+  console.error('subscription_one error', error);
 });
 
-subscription.on('close', () => {
-  console.log('subscription closed');
+subscription_one.on('close', () => {
+  console.log('subscription_one subscription closed');
+});
+
+// listen for new messages
+subscription_two = pubsub
+  .subscription(SUBSCRIPTION_NAME, {
+    flowControl: {
+      maxMessages: 1,
+    },
+  })
+  .on('message', async (message) => {
+    const data = JSON.parse(message.data.toString());
+    console.log(
+      'subscription_two message received',
+      data,
+      new Date().toISOString(),
+      message.publishTime,
+    );
+
+    await waitSec(1);
+
+    if (data.attempt === 51) {
+      console.log(
+        'subscription_two message unack',
+        data,
+        new Date().toISOString(),
+        message.publishTime,
+      );
+      message.nack();
+      return;
+    }
+
+    console.log(
+      'subscription_two message ack',
+      data,
+      new Date().toISOString(),
+      message.publishTime,
+    );
+    message.ack();
+  });
+
+subscription_two.on('error', (error) => {
+  console.error('subscription_two error', error);
+});
+
+subscription_two.on('close', () => {
+  console.log('subscription_two subscription closed');
 });
 
 app.get('/healthz', (req, res) => {
@@ -86,8 +133,15 @@ app.post('/event', async (req, res) => {
 });
 
 app.post('/pubsub/open', (req, res) => {
-  console.log('/pubsub/open');
-  subscription.open();
+  console.log('/pubsub/open', req.body);
+
+  if (req.body.subscriptions.includes('subscription_one')) {
+    subscription_one.open();
+  }
+
+  if (req.body.subscriptions.includes('subscription_two')) {
+    subscription_two.open();
+  }
 
   return res.status(200).json({
     message: 'ok',
@@ -95,8 +149,15 @@ app.post('/pubsub/open', (req, res) => {
 });
 
 app.post('/pubsub/close', async (req, res) => {
-  console.log('/pubsub/close');
-  await subscription.close();
+  console.log('/pubsub/close', req.body);
+
+  if (req.body.subscriptions.includes('subscription_one')) {
+    await subscription_one.close();
+  }
+
+  if (req.body.subscriptions.includes('subscription_two')) {
+    await subscription_two.close();
+  }
 
   return res.status(200).json({
     message: 'ok',
