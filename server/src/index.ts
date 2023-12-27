@@ -16,19 +16,20 @@ const waitSec = (sec: number) => {
   return new Promise((resolve) => {
     setTimeout(resolve, sec * 1000);
   });
-}
+};
 
 // listen for new messages
 subscription = pubsub
   .subscription(SUBSCRIPTION_NAME, {
-    // batching: {
-    //   maxMessages: 1,
-    // },
+    batching: {
+      maxMessages: 1,
+    },
   })
   .on('message', async (message) => {
     const data = JSON.parse(message.data.toString());
+    console.log('message received', data, new Date().toISOString());
 
-    await waitSec(1);
+    await waitSec(5);
 
     if (data.attempt === 51) {
       console.log('message unack', data, message.publishTime);
@@ -59,10 +60,17 @@ app.post('/event', async (req, res) => {
   console.log('/event', req.body);
 
   // publish message
-  await pubsub.topic(TOPIC_NAME).publishMessage({
-    json: req.body,
-    orderingKey: req.body.orderingKey,
-  });
+  await pubsub
+    .topic(TOPIC_NAME, {
+      messageOrdering: true,
+      batching: {
+        maxMessages: 1,
+      },
+    })
+    .publishMessage({
+      json: req.body,
+      orderingKey: req.body.orderingKey,
+    });
 
   return res.status(200).json({
     message: 'ok',
