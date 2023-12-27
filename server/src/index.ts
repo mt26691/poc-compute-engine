@@ -27,7 +27,12 @@ subscription = pubsub
   })
   .on('message', async (message) => {
     const data = JSON.parse(message.data.toString());
-    console.log('message received', data, new Date().toISOString());
+    console.log(
+      'message received',
+      data,
+      new Date().toISOString(),
+      message.publishTime,
+    );
 
     await waitSec(5);
 
