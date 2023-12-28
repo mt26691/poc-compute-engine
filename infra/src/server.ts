@@ -3,7 +3,7 @@ import { createPublicGceService } from './utils/createPublicGceService';
 import { subscription, topic } from './pubsub';
 
 const PORT = 3000;
-const imageUrl = `gcr.io/tat-den/poc-compute-engine:7`;
+const imageUrl = `gcr.io/tat-den/poc-compute-engine:1`;
 export const serviceName = 'poc-compute-engine';
 
 createPublicGceService({
