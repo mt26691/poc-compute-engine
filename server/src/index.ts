@@ -83,14 +83,20 @@ app.post('/pubsub/close', async (req, res) => {
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-// process.on('SIGTERM', async () => {
-//   console.log('SIGTERM signal received: closing HTTP server');
-//   await subscription.close();
-//   process.exit(0);
-// });
-
-// process.on('exit', async () => {
-//   console.log('exit signal received: closing HTTP server');
-//   await subscription.close();
-//   process.exit(0);
-// });
+[
+  'SIGINT',
+  'SIGTERM',
+  'SIGQUIT',
+  'uncaughtException',
+  'unhandledRejection',
+  'exit',
+  'beforeExit',
+  'disconnect',
+  'rejectionHandled',
+  'warning',
+  'message',
+].forEach((event) => {
+  process.on(event, () => {
+    console.log(`process.on ${event}`);
+  });
+});
