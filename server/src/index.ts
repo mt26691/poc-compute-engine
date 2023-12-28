@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import { pubsub } from './pubsub';
-import { Message, Subscription } from '@google-cloud/pubsub';
+import { Message } from '@google-cloud/pubsub';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,24 +11,9 @@ const SUBSCRIPTION_NAME = process.env.SUBSCRIPTION_NAME || 'unset';
 app.use(express.static('public'));
 app.use(express.json());
 
-const waitSec = (sec: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, sec * 1000);
-  });
-};
-
 const createMessageHandler =
   (pubsubName: string) => async (message: Message) => {
     const data = JSON.parse(message.data.toString());
-    console.log(
-      `${pubsubName} message received`,
-      data,
-      new Date().toISOString(),
-      message.publishTime,
-    );
-
-    await waitSec(1);
-
     if (data.attempt === 51) {
       console.log(
         `${pubsubName} message unack`,
