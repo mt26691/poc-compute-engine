@@ -1,7 +1,7 @@
 import * as gcp from '@pulumi/gcp';
-import * as pulumi from '@pulumi/pulumi';
 import * as yaml from 'yaml';
 import { Image, SecretVolume } from '.';
+import { buildShutdownScript } from './buildStartupScript';
 
 type CreateInstanceMetadataParams = {
   resourcePrefix: string;
@@ -42,6 +42,7 @@ export const createInstanceMetadata = (
         restartPolicy: 'Always',
       },
     }),
+    'shutdown-script': buildShutdownScript(),
     'google-logging-enabled': 'true',
   };
 };

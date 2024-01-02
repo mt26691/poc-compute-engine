@@ -24,3 +24,10 @@ export const buildStartupScript = (params: BuildStartupScriptParams) => {
       >> ${params.secretVolume.hostPath}
   `;
 };
+
+export const buildShutdownScript = () => {
+  return pulumi.interpolate`
+    #!/bin/bash
+    echo "shutdown script"
+  `;
+};
