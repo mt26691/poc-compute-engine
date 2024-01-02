@@ -27,8 +27,8 @@ export const buildStartupScript = (params: BuildStartupScriptParams) => {
 
     mkdir -p /etc/systemd/system/docker.service.d
     printf "[Service]\nExecStop=docker ps -q | xargs docker stop" >> /etc/systemd/system/docker.service.d/override.conf
-    # systemctl daemon-reload
-    # systemctl restart docker
+    systemctl daemon-reload
+    systemctl restart docker
   `;
 };
 
