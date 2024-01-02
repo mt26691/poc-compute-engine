@@ -25,7 +25,8 @@ export const buildStartupScript = (params: BuildStartupScriptParams) => {
       | jq -r ".payload.data" | base64 --decode \
       >> ${params.secretVolume.hostPath}
 
-    echo "[Service]\nExecStop=docker ps -q | xargs docker stop" > /etc/systemd/system/docker.service.d/override.conf
+    mkdir -p /etc/systemd/system/docker.service.d
+    printf "[Service]\nExecStop=docker ps -q | xargs docker stop" >> /etc/systemd/system/docker.service.d/override.conf
     # systemctl daemon-reload
     # systemctl restart docker
   `;
