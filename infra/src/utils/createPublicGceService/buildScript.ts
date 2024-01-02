@@ -10,6 +10,8 @@ type BuildStartupScriptParams = {
 export const buildStartupScript = (params: BuildStartupScriptParams) => {
   return pulumi.interpolate`
     #!/bin/bash
+    echo "startup script"
+
     ACCESS_TOKEN=$( \
       curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token \
         --header "Metadata-Flavor: Google" \
@@ -22,6 +24,10 @@ export const buildStartupScript = (params: BuildStartupScriptParams) => {
       --header "content-type: application/json" \
       | jq -r ".payload.data" | base64 --decode \
       >> ${params.secretVolume.hostPath}
+
+    # echo "[Service]\nExecStop=docker ps -q | xargs docker stop" > /etc/systemd/system/docker.service.d/override.conf
+    # systemctl daemon-reload
+    # systemctl restart docker
   `;
 };
 
@@ -29,5 +35,6 @@ export const buildShutdownScript = () => {
   return pulumi.interpolate`
     #!/bin/bash
     echo "shutdown script"
+    docker ps -q | xargs docker stop
   `;
 };
