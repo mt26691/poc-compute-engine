@@ -1,7 +1,6 @@
 import * as gcp from '@pulumi/gcp';
 import { Image, SecretVolume } from '.';
-import { buildStartupScript } from './buildStartupScript';
-import { createInstanceMetadata } from './createInstanceMetadata';
+import { buildStartupScript } from './buildScript';
 import { buildInstanceMetadata } from './buildInstanceMetadata';
 
 type CreateInstanceTemplateParams = {

@@ -10,4 +10,4 @@ COPY . .
 
 RUN npm run build
 
-ENTRYPOINT ["node", "build/index.js"]
+CMD ["node", "build/index.js"]
