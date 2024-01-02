@@ -96,7 +96,7 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   'warning',
   'message',
 ].forEach((event) => {
-  process.on(event, () => {
-    console.log(`process.on ${event}`);
+  process.on(event, (data) => {
+    console.log(`process.on ${event}`, data);
   });
 });
