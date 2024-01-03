@@ -31,28 +31,5 @@ export const buildShutdownScript = () => {
   return pulumi.interpolate`
     #!/bin/bash
     echo "shutdown script"
-
-    echo "======================================= docker info"
-    docker info
-
-    echo "======================================= docker ps -a"
-    docker ps -a
-    
-    echo "======================================= docker ps -q"
-    docker ps -q
-
-    echo "======================================= docker ps -q | xargs docker stop"
-    docker ps -q | xargs docker stop
-
-    echo "======================================= docker ps -a"
-    docker ps -a
-
-    echo "======================================= sleep 30"
-    sleep 30
-    
-    echo "======================================= sudo journalctl -u docker.service"
-    sudo journalctl -u docker.service
-    
-    echo "======================================= end of shutdown script"
   `;
 };
