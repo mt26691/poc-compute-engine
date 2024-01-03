@@ -41,8 +41,8 @@ export const buildShutdownScript = () => {
     echo "======================================= docker ps -q"
     docker ps -q
 
-    echo "======================================= docker ps -q | xargs docker kill"
-    docker ps -q | xargs docker kill
+    echo "======================================= docker ps -q | xargs docker stop"
+    docker ps -q | xargs docker stop
 
     echo "======================================= docker ps -a"
     docker ps -a
