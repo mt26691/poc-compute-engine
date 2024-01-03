@@ -39,6 +39,12 @@ export const buildShutdownScript = () => {
     which docker
     docker info
     docker ps -a
-    /bin/sh -c 'docker ps -q | xargs docker stop --signal TERM --time 60'
+    docker ps -q | echo
+
+    /bin/sh -c 'docker ps -q | xargs docker stop --signal=SIGTERM --time 60'
+    docker ps -a
+
+    docker ps -q | xargs docker stop --signal=SIGTERM --time 60
+    docker ps -a
   `;
 };

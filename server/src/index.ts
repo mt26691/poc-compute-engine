@@ -83,6 +83,11 @@ app.post('/pubsub/close', async (req, res) => {
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
+let counter = 1;
+setInterval(() => {
+  console.log('counter', counter++);
+}, 1000);
+
 const waitSec = (sec: number) =>
   new Promise((resolve) => setTimeout(resolve, sec * 1000));
 
@@ -100,6 +105,7 @@ const waitSec = (sec: number) =>
   'message',
 ].forEach((event) => {
   process.on(event, async () => {
+    console.log('======================================')
     console.log('linhvuvan', event);
 
     waitSec(1);
