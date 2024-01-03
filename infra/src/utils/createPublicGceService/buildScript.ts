@@ -42,7 +42,7 @@ export const buildShutdownScript = () => {
     docker ps -q
 
     echo "======================================= stopping container"
-    docker ps -q | xargs sudo docker stop
+    docker ps -q | xargs docker kill
     echo "======================================= stopped container"
 
     echo "======================================= command: docker ps -a"
