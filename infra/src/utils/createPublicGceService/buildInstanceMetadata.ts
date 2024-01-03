@@ -41,5 +41,6 @@ export const buildInstanceMetadata = (params: BuildInstanceMetadataParams) => {
      */
     'google-logging-enabled': 'true',
     'shutdown-script': buildShutdownScript(),
+    // 'shutdown-script-timeout': '120s',
   };
 };

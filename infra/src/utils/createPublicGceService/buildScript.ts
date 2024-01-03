@@ -24,12 +24,17 @@ export const buildStartupScript = (params: BuildStartupScriptParams) => {
       --header "content-type: application/json" \
       | jq -r ".payload.data" | base64 --decode \
       >> ${params.secretVolume.hostPath}
+
+    mkdir -p /etc/systemd/system/docker.service.d
+    printf "[Service]\nExecStop=docker ps -q | xargs docker stop --time 60\n" > /etc/systemd/system/docker.service.d/override.conf
+    systemctl daemon-reload
+    systemctl restart docker
   `;
 };
 
 export const buildShutdownScript = () => {
   return pulumi.interpolate`
     #!/bin/bash
-    docker ps -q | xargs docker stop --time 60
+    # docker ps -q | xargs docker stop --time 60
   `;
 };

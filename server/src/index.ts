@@ -105,10 +105,10 @@ const waitSec = (sec: number) =>
   'message',
 ].forEach((event) => {
   process.on(event, async () => {
-    console.log('====================================== linhvuvan', event);
+    console.log('======================================', event);
 
     await waitSec(30);
 
-    console.log('====================================== done');
+    console.log('======================================', 'done');
   });
 });
