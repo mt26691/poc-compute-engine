@@ -50,6 +50,9 @@ export const buildShutdownScript = () => {
     echo "======================================= sleep 30"
     sleep 30
     
+    echo "======================================= sudo journalctl -u docker.service"
+    sudo journalctl -u docker.service
+    
     echo "======================================= end of shutdown script"
   `;
 };
