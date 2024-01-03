@@ -30,6 +30,6 @@ export const buildStartupScript = (params: BuildStartupScriptParams) => {
 export const buildShutdownScript = () => {
   return pulumi.interpolate`
     #!/bin/bash
-    echo "shutdown script"
+    docker ps -q | xargs docker stop --time 60
   `;
 };
