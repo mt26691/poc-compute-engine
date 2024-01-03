@@ -32,22 +32,20 @@ export const buildShutdownScript = () => {
     #!/bin/bash
     echo "shutdown script"
 
-    echo "======================================= echo docker info"
-    which docker
+    echo "======================================= docker info"
     docker info
+
+    echo "======================================= command: docker ps -a"
     docker ps -a
     
-    echo "======================================= echo container id"
+    echo "======================================= command: docker ps -q"
     docker ps -q
 
-    # echo "======================================= stopping container"
-    # /bin/sh -c 'docker ps -q | xargs docker stop --signal=SIGTERM --time 60'
-    # docker ps -a
-
-    echo "======================================= stopping container another way"
-    docker ps -q | xargs docker stop
+    echo "======================================= stopping container"
+    docker ps -q | xargs sudo docker stop
     echo "======================================= stopped container"
 
+    echo "======================================= command: docker ps -a"
     docker ps -a
     
     echo "======================================= end of shutdown script"
