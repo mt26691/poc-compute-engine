@@ -15,7 +15,7 @@ createPublicGceService({
   machineType: 't2d-standard-1',
   containerPort: PORT,
   initialStartupDelaySec: 30,
-  numberOfInstances: 1,
+  numberOfInstances: 0,
   healthCheck: {
     httpHealthCheck: {
       port: PORT,
