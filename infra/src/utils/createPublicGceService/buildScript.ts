@@ -36,5 +36,9 @@ export const buildShutdownScript = () => {
   return pulumi.interpolate`
     #!/bin/bash
     echo "shutdown script"
+    which docker
+    docker info
+    docker ps -a
+    /bin/sh -c 'docker ps -q | xargs docker stop --signal TERM --time 60'
   `;
 };

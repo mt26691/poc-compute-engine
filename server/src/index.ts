@@ -83,6 +83,9 @@ app.post('/pubsub/close', async (req, res) => {
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
+const waitSec = (sec: number) =>
+  new Promise((resolve) => setTimeout(resolve, sec * 1000));
+
 [
   'SIGINT',
   'SIGTERM',
@@ -96,7 +99,9 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   'warning',
   'message',
 ].forEach((event) => {
-  process.on(event, () => {
-    console.log(event);
+  process.on(event, async () => {
+    console.log('linhvuvan', event);
+
+    waitSec(1);
   });
 });
