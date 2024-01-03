@@ -39,14 +39,24 @@ export const buildShutdownScript = () => {
     docker ps -a
     
     echo "======================================= command: docker ps -q"
-    docker ps -q
+    CONTAINER_ID=$(docker ps -q)
+    echo $CONTAINER_ID
+
+    echo "======================================= command: ls -l /var/run/docker.sock"
+    ls -l /var/run/docker.sock
 
     echo "======================================= stopping container"
     docker ps -q | xargs docker kill
     echo "======================================= stopped container"
 
     echo "======================================= command: docker ps -a"
+    docker logs $CONTAINER_ID
+
+    echo "======================================= command: docker ps -a"
     docker ps -a
+
+    echo "======================================= command: sleep 30"
+    sleep 30
     
     echo "======================================= end of shutdown script"
   `;
