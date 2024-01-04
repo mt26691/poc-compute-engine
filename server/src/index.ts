@@ -84,7 +84,7 @@ app.post('/pubsub/close', async (req, res) => {
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 let counter = 1;
-setInterval(() => {
+const interval = setInterval(() => {
   console.log('counter', counter++);
 }, 1000);
 
@@ -108,6 +108,7 @@ const waitSec = (sec: number) =>
     console.log('======================================', event);
 
     await waitSec(30);
+    clearInterval(interval);
 
     console.log('======================================', 'done');
   });
