@@ -1,5 +1,4 @@
 import * as yaml from 'yaml';
-import { buildShutdownScript } from './buildScript';
 
 type Container = {
   name: string;
@@ -40,7 +39,5 @@ export const buildInstanceMetadata = (params: BuildInstanceMetadataParams) => {
      * https://cloud.google.com/container-optimized-os/docs/how-to/logging
      */
     'google-logging-enabled': 'true',
-    'shutdown-script': buildShutdownScript(),
-    // 'shutdown-script-timeout': '120s',
   };
 };
