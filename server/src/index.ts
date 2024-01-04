@@ -111,5 +111,6 @@ const waitSec = (sec: number) =>
     clearInterval(interval);
 
     console.log('======================================', 'done');
+    process.exit(0);
   });
 });
