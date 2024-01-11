@@ -15,7 +15,7 @@ createPublicGceService({
   machineType: 't2d-standard-1',
   containerPort: PORT,
   initialStartupDelaySec: 30,
-  numberOfInstances: 0,
+  numberOfInstances: 5,
   healthCheck: {
     httpHealthCheck: {
       port: PORT,
@@ -53,7 +53,7 @@ createPublicGceService({
       },
     ],
   },
-  domain: 'linhvuvan.com',
+  domains: ['linhvuvan.com'],
   managedZone: 'linhvuvan-com',
   project: 'chi-dau',
   region: 'us-central1',

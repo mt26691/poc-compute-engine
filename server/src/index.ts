@@ -38,6 +38,7 @@ const subscription = pubsub
   .subscription(SUBSCRIPTION_NAME, {
     flowControl: { maxMessages: 1 },
   })
+  .on('newListener', console.log)
   .on('message', createMessageHandler(Math.random().toString()))
   .on('error', console.error)
   .on('close', () => console.log('subscription closed'));
@@ -106,11 +107,6 @@ const waitSec = (sec: number) =>
 ].forEach((event) => {
   process.on(event, async () => {
     console.log('======================================', event);
-
-    await waitSec(30);
-    clearInterval(interval);
-
-    console.log('======================================', 'done');
     process.exit(0);
   });
 });

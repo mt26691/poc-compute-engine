@@ -73,6 +73,7 @@ export const createInstanceTemplate = (
         secret: params.secret,
         secretVolume: params.secretVolume,
       }),
+      tags: [params.resourcePrefix],
     },
   );
 

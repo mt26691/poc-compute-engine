@@ -4,7 +4,7 @@ import * as gcp from '@pulumi/gcp';
 type CreateApplicationLoadBalancerParams = {
   resourcePrefix: string;
   backend: gcp.compute.BackendService;
-  sslCertificate: gcp.compute.ManagedSslCertificate;
+  sslCertificates: gcp.compute.ManagedSslCertificate[];
   domain: string;
   managedZone: string;
 };
@@ -25,7 +25,7 @@ export const createApplicationLoadBalancer = (
     `${params.resourcePrefix}-https-proxy`,
     {
       urlMap: map.id,
-      sslCertificates: [params.sslCertificate.id],
+      sslCertificates: params.sslCertificates.map((item) => item.id),
     },
   );
 

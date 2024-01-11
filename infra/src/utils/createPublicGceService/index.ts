@@ -5,11 +5,10 @@ import { createNetwork } from './createNetwork';
 import { createSubnetwork } from './createSubnetwork';
 import { createApplicationLoadBalancer } from './createApplicationLoadBalancer';
 import { createBackend } from './createBackend';
-import { createSslCertificate } from './createSslCertificate';
+import { createSslCertificates } from './createSslCertificates';
 import { createInstanceGroupManager } from './createInstanceGroupManager';
 import { createInstanceTemplate } from './createInstanceTemplate';
 import { createDockerImage } from './createDockerImage';
-import { createInstanceGroupInspector } from './createInstanceGroupInspector';
 import { createSecret } from './createSecret';
 
 export type Image = {
@@ -41,7 +40,7 @@ type CreatePublicGceServiceParams = {
   numberOfInstances: number;
   healthCheck: gcp.compute.HealthCheckArgs;
   instance: Instance;
-  domain: string;
+  domains: string[];
   managedZone: string;
   project: string;
   region: string;
@@ -98,33 +97,22 @@ export const createPublicGceService = (
     region: params.region,
   });
 
-  // createInstanceGroupInspector({
-  //   resourcePrefix: params.resourcePrefix,
-  //   region: params.region,
-  //   project: params.project,
-  //   numberOfInstances: params.numberOfInstances,
-  //   instanceTemplate: instanceTemplate,
-  //   instanceGroupManager: instanceGroupManager,
-  //   initialStartupDelaySec: params.initialStartupDelaySec,
-  // });
-
   const backend = createBackend({
     resourcePrefix: params.resourcePrefix,
     healthCheck: params.healthCheck,
     instanceGroupManager,
   });
 
-  const sslCertificate = createSslCertificate({
+  const sslCertificates = createSslCertificates({
     resourcePrefix: params.resourcePrefix,
-    domain: params.domain,
-    managedZone: params.managedZone,
+    domains: params.domains,
   });
 
   createApplicationLoadBalancer({
     resourcePrefix: params.resourcePrefix,
-    domain: params.domain,
+    domain: params.domains[0],
     managedZone: params.managedZone,
     backend,
-    sslCertificate,
+    sslCertificates,
   });
 };
