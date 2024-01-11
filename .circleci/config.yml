@@ -23,7 +23,6 @@ jobs:
           name: Save GCP credentials
           command: |
             echo $RANDOM_STRING > ~/gcloud-service-key.json
-            cat ~/gcloud-service-key.json
             echo "export GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json" >> $BASH_ENV
       - run:
           name: Install npm dependencies in the infra directory

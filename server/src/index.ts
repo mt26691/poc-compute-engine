@@ -51,9 +51,6 @@ app.get('/healthz', (req, res) => {
 });
 
 app.post('/event', async (req, res) => {
-  console.log('/event', req.body);
-
-  // publish message
   await pubsub.topic(TOPIC_NAME).publishMessage({
     json: req.body,
     orderingKey: req.body.orderingKey,
@@ -83,14 +80,6 @@ app.post('/pubsub/close', async (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-let counter = 1;
-const interval = setInterval(() => {
-  console.log('counter', counter++);
-}, 1000);
-
-const waitSec = (sec: number) =>
-  new Promise((resolve) => setTimeout(resolve, sec * 1000));
 
 [
   'SIGINT',
