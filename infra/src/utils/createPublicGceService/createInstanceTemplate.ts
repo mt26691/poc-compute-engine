@@ -62,7 +62,7 @@ export const createInstanceTemplate = (
         {
           network: params.network.id,
           subnetwork: params.subnetwork.id,
-          accessConfigs: [],
+          accessConfigs: [{}],
         },
       ],
       serviceAccount: {
