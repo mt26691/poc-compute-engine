@@ -39,10 +39,13 @@ const subscription = pubsub
   .subscription(SUBSCRIPTION_NAME, {
     flowControl: { maxMessages: 1 },
   })
-  .on('newListener', console.log)
   .on('message', createMessageHandler(Math.random().toString()))
-  .on('error', console.error)
-  .on('close', () => console.log);
+  .on('error', (error) => {
+    console.log('error occured', error);
+  })
+  .on('close', () => {
+    console.log('subscription closed');
+  });
 
 app.get('/healthz', (req, res) => {
   return res.status(200).json({
