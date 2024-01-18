@@ -14,6 +14,7 @@ app.use(express.json());
 const createMessageHandler =
   (pubsubName: string) => async (message: Message) => {
     const data = JSON.parse(message.data.toString());
+
     if (data.attempt === 51) {
       console.log(
         `${pubsubName} message unack`,
@@ -41,7 +42,7 @@ const subscription = pubsub
   .on('newListener', console.log)
   .on('message', createMessageHandler(Math.random().toString()))
   .on('error', console.error)
-  .on('close', () => console.log('subscription closed'));
+  .on('close', () => console.log);
 
 app.get('/healthz', (req, res) => {
   return res.status(200).json({
@@ -65,37 +66,14 @@ app.post('/pubsub/open', (req, res) => {
   console.log('/pubsub/open');
   subscription.open();
 
-  return res.status(200).json({
-    message: 'ok',
-  });
+  return res.status(200).send('OK');
 });
 
 app.post('/pubsub/close', async (req, res) => {
   console.log('/pubsub/close');
   await subscription.close();
 
-  return res.status(200).json({
-    message: 'ok',
-  });
+  return res.status(200).send('OK');
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-[
-  'SIGINT',
-  'SIGTERM',
-  'SIGQUIT',
-  'uncaughtException',
-  'unhandledRejection',
-  'exit',
-  'beforeExit',
-  'disconnect',
-  'rejectionHandled',
-  'warning',
-  'message',
-].forEach((event) => {
-  process.on(event, async () => {
-    console.log('======================================', event);
-    process.exit(0);
-  });
-});

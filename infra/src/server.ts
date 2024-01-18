@@ -1,6 +1,6 @@
 import * as pulumi from '@pulumi/pulumi';
 import { createPublicGceService } from './utils/createPublicGceService';
-import { subscription, topic } from './pubsub';
+import { mainSub, mainTopic } from './pubsub';
 
 const PORT = 3000;
 const imageUrl = `gcr.io/tat-den/poc-compute-engine:1`;
@@ -25,8 +25,8 @@ createPublicGceService({
   secretData: pulumi.interpolate`
     PORT=${PORT}
     REVISION=${imageUrl}
-    TOPIC_NAME=${topic.name}
-    SUBSCRIPTION_NAME=${subscription.name}
+    TOPIC_NAME=${mainTopic.name}
+    SUBSCRIPTION_NAME=${mainSub.name}
   `,
   instance: {
     baseName: serviceName,
